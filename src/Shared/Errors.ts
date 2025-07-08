@@ -1,3 +1,5 @@
+import { ZodError } from "zod";
+
 export abstract class DomainError extends Error {
     constructor(message: string) {
         super(message);
@@ -41,9 +43,7 @@ export class NotFoundError extends DomainError {
  * Thrown when Zod or other validation logic fails
  */
 export class ValidationError extends DomainError {
-    constructor(
-        private readonly issues: Array<{ path: string; message: string }>,
-    ) {
+    constructor(private readonly issues: ZodError) {
         super("Validation failed");
     }
 
@@ -51,7 +51,10 @@ export class ValidationError extends DomainError {
         return {
             type: "VALIDATION_ERROR",
             message: this.message,
-            details: this.issues,
+            details: this.issues.issues.map((issue) => ({
+                path: issue.path.join("."),
+                message: issue.message,
+            })),
         };
     }
 

@@ -1,22 +1,20 @@
-import { Request, Response, NextFunction } from "express";
-import { DomainError } from "../Errors.js";
+import { NextFunction, Request, Response } from "express";
+import { DomainError, UnexpectedError } from "../Errors.js";
 
 export const errorMiddleware = (
     err: Error,
-    req: Request,
+    _req: Request,
     res: Response,
-    next: NextFunction,
-) => {
-    // If the error is one of our custom domain errors, we can serialize it
+    _next: NextFunction,
+): void => {
     if (err instanceof DomainError) {
-        return res.status(err.getStatusCode()).json(err.serialize());
+        res.status(err.getStatusCode()).json(err.serialize());
     }
 
-    // Log the actual error for debugging purposes
     console.error(err);
 
-    return res.status(500).json({
-        type: "UNEXPECTED_ERROR",
-        message: "An unexpected error occurred on the server.",
-    });
+    const unexpectedError = new UnexpectedError(err);
+    res.status(unexpectedError.getStatusCode()).json(
+        unexpectedError.serialize(),
+    );
 };
