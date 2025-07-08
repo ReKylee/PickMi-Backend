@@ -11,12 +11,41 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
   - **Header Format**: `Authorization: Bearer <your_jwt_here>`
 - **Standard Error Response**: Use a consistent error format for all failed requests. This helps the frontend handle errors gracefully.
 
+  **EXAMPLE**: 
   ```json
   {
-    "error": "A short, descriptive error message"
+  "error": {
+    "type": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": [
+      { "path": "email", "message": "Invalid email format" },
+      { "path": "password", "message": "Password too weak" }
+      ]
+    }
+  } 
+  ```
+  
+  | Error Type                | HTTP Code | Class                        | Typical Use                                |
+  | ------------------------- | --------- | ---------------------------- | ------------------------------------------ |
+  | `VALIDATION_ERROR`        | 400       | `ValidationError`            | Invalid input (e.g., from Zod)             |
+  | `AUTHENTICATION_ERROR`    | 401       | `AuthenticationError`        | Missing or bad JWT                         |
+  | `FORBIDDEN_ERROR`         | 403       | `ForbiddenError`             | Unauthorized action (e.g., wrong location) |
+  | `NOT_FOUND`               | 404       | `NotFoundError`              | Missing notes, users, etc.                 |
+  | `BUSINESS_RULE_VIOLATION` | 422       | `BusinessRuleViolationError` | Domain logic failures (e.g. duplicates)    |
+  | `UNEXPECTED_ERROR`        | 500       | `UnexpectedError`            | Server or uncaught issues                  |
+
+  **FORMAT**:
+  ```json
+  {
+    "error": {
+      "type": "VALIDATION_ERROR",      // One of: NOT_FOUND, VALIDATION_ERROR, AUTHENTICATION_ERROR, etc.
+      "message": "A human-readable summary",
+      "details": {}                    // Optional field depending on error type
+    }
   }
   ```
 
+- **Authentication**: For every place where authentication is required, note that an authentication error may be thrown.
 - **Data Format**: All request and response bodies should be in `JSON` format.
 
 ---
@@ -47,8 +76,17 @@ These endpoints handle user sign-up, sign-in, and password recovery.
   ```
 
 - **Error Responses**:
-  - `409 Conflict`: If the email address is already in use. `{"error": "Email already exists."}`
-  - `400 Bad Request`: If the email is invalid or the password doesn't meet strength requirements. `{"error": "Password is too weak. It must contain..."}`
+  - `409 Conflict`: If the email address is already in use. -> BusinessRuleViolationError
+    ```json
+    {
+    "error": {
+      "type": "BUSINESS_RULE_VIOLATION",
+      "message": "Email already exists."
+      }
+    }
+    ```
+
+  - `400 Bad Request`: If the email is invalid or the password doesn't meet strength requirements. -> ValidationError
 
 ### 2. User Sign In
 
@@ -71,8 +109,16 @@ These endpoints handle user sign-up, sign-in, and password recovery.
   }
   ```
 
-- **Error Response** (`401 Unauthorized`):
-  - For incorrect email or password. `{"error": "Invalid credentials."}`
+- **Error Response** (`401 Unauthorized`) -> AuthenticationError
+  - For incorrect email or password.
+    ```json
+    {
+    "error": {
+      "type": "AUTHENTICATION_ERROR",
+      "message": "Invalid credentials."
+      }
+    }
+    ```
 
 ### 3. Forgot Password
 
@@ -118,7 +164,15 @@ These endpoints handle user sign-up, sign-in, and password recovery.
   ```
 
 - **Error Response** (`400 Bad Request`):
-  - If the token is invalid/expired or the new password is too weak. `{"error": "Invalid token or weak password."}`
+  - If the token is invalid/expired or the new password is too weak. -> ValidationError
+    ```json
+    {
+      "error": {
+        "type": "VALIDATION_ERROR",
+        "message": "Invalid token or weak password."
+      }
+    }
+    ```
 
 
 ### 5. Delete Account
@@ -138,11 +192,14 @@ These endpoints handle user sign-up, sign-in, and password recovery.
       "message": "Account deleted successfully."
     }
     ```
-* **Error Response** (`403 Forbidden`):
-    * Returned if the provided password does not match the one on record for the user.
+* **Error Response** (`401 Unauthorized`) -> AuthenticationError
+    * Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired.
     ```json
     {
-      "error": "Incorrect password."
+    "error": {
+      "type": "AUTHENTICATION_ERROR",
+      "message": "Invalid password."
+      }
     }
     ```
     
@@ -183,8 +240,38 @@ These endpoints are for the core functionality of the app.
   ```
 
 - **Error Responses**:
-  - `403 Forbidden`: If the user's coordinates are too far from the `placeId` location. `{"error": "You are not at this location."}`
-  - `400 Bad Request`: If content is missing or location data is invalid. `{"error": "Invalid note data."}`
+  - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
+    ```json
+    {
+    "error": {
+      "type": "AUTHENTICATION_ERROR",
+      "message": "Invalid password."
+      }
+    }
+    ```
+    
+  - `403 Forbidden`: If the user's coordinates are too far from the `placeId` location -> ForbiddenError
+    ```json
+    {
+    "error": {
+      "type": "FORBIDDEN_ERROR",
+      "message": "You are not at this location."
+      }
+    }
+    ```
+  - `400 Bad Request`: If content is missing or location data is invalid -> ValidationError
+    ```json
+    {
+    "error": {
+      "type": "VALIDATION_ERROR",
+      "message": "Invalid note data.",
+      "details": [
+        { "path": "content.text", "message": "Text is required." },
+        { "path": "location", "message": "Invalid coordinates." }
+      ]
+      }
+    }
+    ```
 
 ### 2. Get Nearby Notes (for the Map)
 
@@ -212,6 +299,17 @@ These endpoints are for the core functionality of the app.
     }
   ]
   ```
+  
+- **Error Responses**:
+  - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
+    ```json
+    {
+    "error": {
+      "type": "AUTHENTICATION_ERROR",
+      "message": "Invalid password."
+      }
+    }
+    ```
 
 ### 3. Get a Specific Note's Content
 
@@ -234,11 +332,25 @@ These endpoints are for the core functionality of the app.
   }
   ```
 
-- **Error Response** (`404 Not Found`):
- ```json
-  {
-  "error": "Note not found."
-  }
-  ```
+- **Error Response**
+  - `404 Not Found` -> NotFoundError
+   ```json
+    {
+    "error": {
+      "type": "NOT_FOUND",
+      "message": "Note not found."
+      }
+    }
+    ```
+
+  - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
+    ```json
+    {
+    "error": {
+      "type": "AUTHENTICATION_ERROR",
+      "message": "Invalid password."
+      }
+    }
+    ```
 
 
