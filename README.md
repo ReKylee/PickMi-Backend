@@ -121,6 +121,30 @@ These endpoints handle user sign-up, sign-in, and password recovery.
   - If the token is invalid/expired or the new password is too weak. `{"error": "Invalid token or weak password."}`
 
 ---
+### 🗑️ Delete Account
+
+* **Endpoint**: `DELETE /api/users/me`
+* **Description**: Permanently deletes the authenticated user's account and all their associated data. For security, this action requires the user to re-enter their current password.
+* **Authentication**: **Required**. The backend identifies the user to be deleted via their JWT.
+* **Request Body**:
+    ```json
+    {
+      "password": "user_current_password"
+    }
+    ```
+* **Success Response** (`200 OK`):
+    ```json
+    {
+      "message": "Account deleted successfully."
+    }
+    ```
+* **Error Response** (`403 Forbidden`):
+    * Returned if the provided password does not match the one on record for the user.
+    ```json
+    {
+      "error": "Incorrect password."
+    }
+    ```
 
 ## 📝 Note & Location Endpoints
 
@@ -213,4 +237,5 @@ These endpoints are for the core functionality of the app.
   ```
 
   ```
+
 
