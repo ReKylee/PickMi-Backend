@@ -121,7 +121,7 @@ These endpoints handle user sign-up, sign-in, and password recovery.
   - If the token is invalid/expired or the new password is too weak. `{"error": "Invalid token or weak password."}`
 
 
-### Delete Account
+### 5. Delete Account
 
 * **Endpoint**: `DELETE /api/users/me`
 * **Description**: Permanently deletes the authenticated user's account and all their associated data. For security, this action requires the user to re-enter their current password.
