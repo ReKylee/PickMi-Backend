@@ -234,10 +234,11 @@ These endpoints are for the core functionality of the app.
   }
   ```
 
-- **Error Response** (`404 Not Found`): `{"error": "Note not found."}`
-
-  ```
-
+- **Error Response** (`404 Not Found`):
+ ```json
+  {
+  "error": "Note not found."
+  }
   ```
 
 
