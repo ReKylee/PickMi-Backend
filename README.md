@@ -120,7 +120,7 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Error Response** (`400 Bad Request`):
   - If the token is invalid/expired or the new password is too weak. `{"error": "Invalid token or weak password."}`
 
----
+
 ### 🗑️ Delete Account
 
 * **Endpoint**: `DELETE /api/users/me`
@@ -145,6 +145,8 @@ These endpoints handle user sign-up, sign-in, and password recovery.
       "error": "Incorrect password."
     }
     ```
+    
+---
 
 ## 📝 Note & Location Endpoints
 
