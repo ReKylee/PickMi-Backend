@@ -10,7 +10,7 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
 - **Authentication**: After a user signs in, the backend will provide a JSON Web Token (JWT). The frontend must send this JWT in the `Authorization` header for all protected requests (like creating or viewing notes).
   - **Header Format**: `Authorization: Bearer <your_jwt_here>`
 - **Standard Error Response**: Use a consistent error format for all failed requests. This helps the frontend handle errors gracefully.
-
+  [View domain error definitions](./src/Shared/Errors.ts)
   **EXAMPLE**: 
   ```json
   {
