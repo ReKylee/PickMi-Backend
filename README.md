@@ -9,6 +9,7 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
 - **Base URL**: All API routes should be prefixed, for example: `/api`.
 - **Authentication**: After a user signs in, the backend will provide a JSON Web Token (JWT). The frontend must send this JWT in the `Authorization` header for all protected requests (like creating or viewing notes).
   - **Header Format**: `Authorization: Bearer <your_jwt_here>`
+  - **Role-Based Access**: The JWT also includes a `role` field, which can be `"user"` or `"admin"`. Some routes require an admin role; attempting to access them as a regular user will result in a `403 Forbidden error`.
 - **Standard Error Response**: Use a consistent error format for all failed requests. This helps the frontend handle errors gracefully.
   [View domain error definitions](./src/Shared/Errors.ts)
   **EXAMPLE**: 
