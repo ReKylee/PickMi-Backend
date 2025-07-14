@@ -353,5 +353,216 @@ These endpoints are for the core functionality of the app.
       }
     }
     ```
+    
+---
 
+## 📝 Admin Endpoints
 
+### 1. Get All Users
+
+  - **Endpoint**: `GET /api/admin/users`
+  - **Description**: Retrieves a list of all registered users.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - **Success Response** (`200 OK`):
+    ```json
+    [
+      {
+        "id": "user123",
+        "email": "user@example.com",
+        "createdAt": "2025-06-30T18:00:00.000Z"
+      },
+      {
+        "id": "user456",
+        "email": "another@example.com",
+        "createdAt": "2025-07-01T11:45:00.000Z"
+      }
+    ]
+    ```
+  - **Error Response**: If attempted by a non-admin. 403 Forbidden → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
+
+### 2. Get All notes
+
+  - **Endpoint**: `GET /api/admin/notes`
+  - **Description**: Retrieves all notes in the system regardless of location or ownership.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - **Success Response** (`200 OK`):
+    ```json
+    [
+    {
+      "id": "mongo_object_id_123",
+      "userId": "user123",
+      "content": {
+        "text": "Admin can see this.",
+        "drawingData": null
+      },
+      "location": {
+        "latitude": 40.7128,
+        "longitude": -74.006,
+        "placeId": "ChIJ..."
+      },
+      "createdAt": "2025-07-08T18:00:00.000Z"
+    }
+    ]
+    ```
+  - **Error Response**: If attempted by a non-admin. 403 Forbidden → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
+
+### 2. Get a Specific User's Info
+
+  - **Endpoint**: `GET /api/admin/users/:id`
+  - **Description**: Retrieves basic information about a specific user.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - Request Parameter:
+     -`:id`: The ID of the user.
+  - **Success Response** (`200 OK`):
+    ```json
+    {
+    "id": "user123",
+    "email": "user@example.com",
+    "createdAt": "2025-06-30T18:00:00.000Z"
+    }
+    ```
+  - **Error Response**:
+  - If the user ID does not exist. (`404 Not Found`) -> NotFoundError
+    ```json
+    {
+      "error": {
+        "type": "NOT_FOUND",
+        "message": "User not found."
+      }
+    }
+    ```
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
+    
+### 3. View a User's Notes
+
+  - **Endpoint**: `GET /api/admin/users/:id/notes`
+  - **Description**: Retrieves all notes thrown by a specific user.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - Request Parameter:
+     -`:id`: The ID of the user.
+  - **Success Response** (`200 OK`):
+    ```json
+    [
+    {
+      "id": "note123",
+      "content": {
+        "text": "This user's note",
+        "drawingData": null
+      },
+      "location": {
+        "latitude": 40.7128,
+        "longitude": -74.006
+      },
+      "createdAt": "2025-07-08T18:00:00.000Z"
+    }
+    ]
+    ```
+  - **Error Response**:
+  - If the user ID or their notes do not exist. (`404 Not Found`) -> NotFoundError
+    ```json
+    {
+      "error": {
+        "type": "NOT_FOUND",
+        "message": "User not found."
+      }
+    }
+    ```
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
+
+### 4. Delete a User
+
+  - **Endpoint**: `DELETE /api/admin/users/:id`
+  - **Description**: Permanently deletes the specified user and all associated notes.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - Request Parameter:
+     -`:id`: The ID of the user.
+  - **Success Response** (`200 OK`):
+    ```json
+    {
+    "message": "User and all associated data deleted successfully."
+    }
+    ```
+  - **Error Response**:
+  - If the user ID does not exist. (`404 Not Found`) -> NotFoundError
+    ```json
+    {
+      "error": {
+        "type": "NOT_FOUND",
+        "message": "User not found."
+      }
+    }
+    ```
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
+
+### 4. Delete a Note
+
+  - **Endpoint**: `DELETE /api/admin/notes/:id`
+  - **Description**: Deletes a specific note, regardless of who created it.
+  - **Authentication**: **Required**. Must have role: "admin" in JWT.
+  - Request Parameter:
+     -`:id`: The ID of the user.
+  - **Success Response** (`200 OK`):
+    ```json
+    {
+    "message": "Note deleted successfully."
+    }
+    ```
+  - **Error Response**:
+  - If the user ID does not exist. (`404 Not Found`) -> NotFoundError
+    ```json
+    {
+      "error": {
+        "type": "NOT_FOUND",
+        "message": "User not found."
+      }
+    }
+    ```
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+    ```json
+    {
+      "error": {
+        "type": "FORBIDDEN_ERROR",
+        "message": "Admin access required."
+      }
+    }
+    ```
