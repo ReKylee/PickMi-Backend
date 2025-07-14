@@ -4,10 +4,14 @@ import { AuthenticationError } from "../Errors.js";
 
 interface JwtPayload {
     id: string;
+    role: "user" | "admin";
 }
 
 export interface AuthenticatedRequest extends Request {
-    user?: { id: string };
+    user?: {
+        id: string; 
+        role: "user" | "admin";
+    };
 }
 
 export const authMiddleware = (
@@ -29,15 +33,16 @@ export const authMiddleware = (
             process.env.JWT_SECRET || "your_default_secret",
         );
 
-        if (
+       if (
             typeof decoded === "object" &&
             decoded !== null &&
-            "id" in decoded
-        ) {
-            req.user = { id: (decoded as JwtPayload).id };
+            "id" in decoded &&
+            "role" in decoded
+       ) {
+            const { id, role } = decoded as JwtPayload;
+            req.user = { id, role };
             next();
         } else {
-            // If the token is valid but doesn't have the right payload, it's still an error
             throw new AuthenticationError("Token is malformed.");
         }
     } catch (error) {
