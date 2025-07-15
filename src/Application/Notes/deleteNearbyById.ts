@@ -49,14 +49,14 @@ export class DeleteNearbyById {
         const userLocation = userLocationResult.value;
 
         return this.locationService
-            .isNoteWithinRadius(
+            .findNoteWithinRadius(
                 noteId,
                 userLocation.latitude,
                 userLocation.longitude,
                 this.maxDistanceMeters,
             )
-            .andThen((isWithinRadius) => {
-                if (!isWithinRadius) {
+            .andThen((nearbyNote) => {
+                if (!nearbyNote) {
                     return errAsync(
                         new BusinessRuleViolationError(
                             'You must be at the note location to delete it.',

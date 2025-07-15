@@ -1,8 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { errAsync, okAsync } from 'neverthrow';
 import { CreateNote } from '../../../Application/Notes/createNote.js';
-import { GetNearbyNotes } from '../../../Application/Notes/getNearbyNotes.js';
 import { DeleteNearbyById } from '../../../Application/Notes/deleteNearbyById.js';
-import { NotFoundError } from '../../../Shared/Errors.js';
+import { GetNearbyNotes } from '../../../Application/Notes/getNearbyNotes.js';
+import { ILocationService } from '../../../Domain/Services/ILocationService.js';
+import { UniqueEntityID } from '../../../Domain/ValueObjects/UniqueEntityID.js';
+import {
+    AuthenticationError,
+    NotFoundError,
+    ValidationError,
+} from '../../../Shared/Errors.js';
 import { AuthenticatedRequest } from '../../../Shared/Middlewares/authMiddleware.js';
 
 export class NoteController {
@@ -10,6 +17,7 @@ export class NoteController {
         private readonly createNoteUseCase: CreateNote,
         private readonly getNearbyNotesUseCase: GetNearbyNotes,
         private readonly deleteNoteUseCase: DeleteNearbyById,
+        private readonly locationService: ILocationService,
     ) {}
 
     public createNote = async (
@@ -17,32 +25,29 @@ export class NoteController {
         res: Response,
         next: NextFunction,
     ) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) {
-                throw new Error('User not authenticated');
-            }
+        const userId = req.user?.id;
+        const { content, location, title } = req.body;
 
-            const { content, location, title } = req.body;
+        if (!userId) {
+            return next(new AuthenticationError('User not authenticated'));
+        }
 
-            const result = await this.createNoteUseCase.execute({
+        const result = await this.createNoteUseCase
+            .execute({
                 title,
                 content,
                 location,
                 userId,
-            });
-
-            if (result.isErr()) {
-                return next(result.error);
-            }
-
-            res.status(201).json({
-                id: result.value.id.toString(),
+            })
+            .map((note) => ({
+                id: note.id.toString(),
                 message: 'Note thrown successfully!',
-            });
-        } catch (error) {
-            next(error);
-        }
+            }));
+
+        result.match(
+            (response) => res.status(201).json(response),
+            (error) => next(error),
+        );
     };
 
     public getNearbyNotes = async (
@@ -64,10 +69,7 @@ export class NoteController {
 
             const notes = result.value.map((note) => ({
                 id: note.id.toString(),
-                location: {
-                    lat: note.location.latitude,
-                    lon: note.location.longitude,
-                },
+                location: note.location,
             }));
 
             res.status(200).json(notes);
@@ -81,41 +83,38 @@ export class NoteController {
         res: Response,
         next: NextFunction,
     ) => {
-        try {
-            const { id } = req.params;
-            const lat = Number(req.query.lat);
-            const lon = Number(req.query.lon);
+        const { id } = req.params;
+        const lat = Number(req.query.lat);
+        const lon = Number(req.query.lon);
 
-            const nearbyNotesResult = await this.getNearbyNotesUseCase.execute({
-                latitude: lat,
-                longitude: lon,
-                radius: 1000,
-            });
-
-            if (nearbyNotesResult.isErr()) {
-                return next(nearbyNotesResult.error);
-            }
-
-            const note = nearbyNotesResult.value.find(
-                (n) => n.id.toString() === id,
-            );
-
-            if (!note) {
-                return next(new NotFoundError('Nearby Note', id));
-            }
-
-            const noteDto = {
+        const result = await UniqueEntityID.from(id)
+            .mapErr((e) => new ValidationError(e))
+            .asyncAndThen((noteId) =>
+                this.locationService.findNoteWithinRadius(
+                    noteId,
+                    lat,
+                    lon,
+                    1000,
+                ),
+            )
+            .andThen((note) => {
+                if (!note) {
+                    return errAsync(new NotFoundError('Nearby Note', id));
+                }
+                return okAsync(note);
+            })
+            .map((note) => ({
                 id: note.id.toString(),
                 content: {
                     text: note.content.text,
                     drawingData: note.content.drawingData,
                 },
-            };
+            }));
 
-            return res.status(200).json(noteDto);
-        } catch (error) {
-            next(error);
-        }
+        result.match(
+            (noteDto) => res.status(200).json(noteDto),
+            (error) => next(error),
+        );
     };
 
     public deleteNote = async (
