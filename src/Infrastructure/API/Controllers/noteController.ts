@@ -105,6 +105,7 @@ export class NoteController {
             })
             .map((note) => ({
                 id: note.id.toString(),
+                title: note.title,
                 content: {
                     text: note.content.text,
                     drawingData: note.content.drawingData,
