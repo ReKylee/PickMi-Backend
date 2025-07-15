@@ -1,8 +1,8 @@
-import { z } from 'zod';
 import { Result } from 'neverthrow';
+import { z } from 'zod';
 import { ValidationError } from '../../Shared/Errors.js';
 
-const emailSchema = z.string().email('Invalid email format.');
+const emailSchema = z.string().trim().email('Invalid email format.');
 
 export class Email {
     private readonly _value: string;

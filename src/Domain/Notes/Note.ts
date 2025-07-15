@@ -1,23 +1,19 @@
-import { z } from 'zod';
-import { Result, ok, err } from 'neverthrow';
-import { DomainEntity } from '../Shared/DomainEntity.js';
-import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
+import { Result } from 'neverthrow';
 import { ValidationError } from '../../Shared/Errors.js';
+import { DomainEntity } from '../Shared/DomainEntity.js';
+import { Content } from '../ValueObjects/Content.js';
+import { Title } from '../ValueObjects/Title.js';
+import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
 
-export const createNoteSchema = z.object({
-    title: z
-        .string()
-        .min(1, 'Title is required.')
-        .max(100, 'Title cannot be longer than 100 characters.'),
-    content: z.string().min(1, 'Content is required.'),
-    userId: z.string().uuid({ message: 'A valid user ID is required.' }),
-});
-
-export type CreateNoteProps = z.infer<typeof createNoteSchema>;
+export interface CreateNoteProps {
+    title: string;
+    content: { text: string; drawingData?: string };
+    userId: string;
+}
 
 export interface NoteProps {
-    title: string;
-    content: string;
+    title: Title;
+    content: Content;
     userId: UniqueEntityID;
 }
 
@@ -26,45 +22,37 @@ export class Note extends DomainEntity<NoteProps> {
         super(props, id);
     }
 
-    /**
-     * Static factory method to create a new Note instance.
-     * It validates the raw input and creates the necessary value objects.
-     * @param {CreateNoteProps} props - The raw properties for creating the note.
-     * @param {UniqueEntityID} [id] - Optional unique ID for the entity.
-     * @returns {Result<Note, ValidationError>} A Result containing either a new Note or a ValidationError.
-     */
     public static create(
         props: CreateNoteProps,
         id?: UniqueEntityID,
     ): Result<Note, ValidationError> {
-        const validationResult = createNoteSchema.safeParse(props);
-        if (!validationResult.success) {
-            return err(new ValidationError(validationResult.error));
-        }
+        // Validate Title VO
+        const titleResult = Title.create(props.title);
 
-        const userIdResult = UniqueEntityID.from(validationResult.data.userId);
+        // Validate Content VO
+        const contentResult = Content.create(props.content);
 
-        // This only runs if userIdResult is successful.
-        return userIdResult.andThen((userId) => {
-            const note = new Note(
-                {
-                    title: validationResult.data.title,
-                    content: validationResult.data.content,
-                    userId: userId,
-                },
-                id,
+        // Validate userId VO
+        const userIdResult = UniqueEntityID.from(props.userId);
+
+        // Combine all validation results
+        return Result.combineWithAllErrors([
+            titleResult,
+            contentResult,
+            userIdResult,
+        ])
+            .mapErr((e) => new ValidationError(...e))
+            .map(
+                ([title, content, userId]) =>
+                    new Note({ title, content, userId }, id),
             );
-            return ok(note);
-        });
     }
 
-    // --- Getter methods to access entity properties ---
-
-    get title(): string {
+    get title(): Title {
         return this.props.title;
     }
 
-    get content(): string {
+    get content(): Content {
         return this.props.content;
     }
 

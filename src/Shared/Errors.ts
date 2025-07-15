@@ -74,6 +74,26 @@ export class ValidationError extends DomainError {
 }
 
 /**
+ * Thrown when a persistence or infrastructure error occurs
+ */
+export class RepositoryError extends DomainError {
+    constructor(message = 'Failed to interact with the repository') {
+        super(message);
+    }
+
+    serialize(): SerializedDomainError {
+        return {
+            type: 'REPOSITORY_ERROR',
+            message: this.message,
+        };
+    }
+
+    getStatusCode(): number {
+        return 500;
+    }
+}
+
+/**
  * Thrown when a domain invariant or business rule is violated
  */
 export class BusinessRuleViolationError extends DomainError {
@@ -101,6 +121,8 @@ export class BusinessRuleViolationError extends DomainError {
  * Thrown when an unexpected/unhandled error occurs
  */
 export class UnexpectedError extends DomainError {
+    private readonly originalError: unknown;
+
     constructor(error: unknown) {
         const message =
             process.env.NODE_ENV === 'production'
@@ -110,12 +132,16 @@ export class UnexpectedError extends DomainError {
                   : 'Unexpected error of unknown type.';
 
         super(message);
+        this.originalError = error;
     }
 
     serialize(): SerializedDomainError {
         return {
             type: 'UNEXPECTED_ERROR',
             message: this.message,
+            ...(process.env.NODE_ENV !== 'production' && {
+                details: this.originalError,
+            }),
         };
     }
 
