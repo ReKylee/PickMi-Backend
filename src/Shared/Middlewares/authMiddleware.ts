@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticationError } from '../Errors.js';
 
 interface JwtPayload {
-    id: string;
+    sub: string;
     role: 'user' | 'admin';
 }
 
@@ -36,17 +36,16 @@ export const authMiddleware = (
         if (
             typeof decoded === 'object' &&
             decoded !== null &&
-            'id' in decoded &&
+            'sub' in decoded &&
             'role' in decoded
         ) {
-            const { id, role } = decoded as JwtPayload;
-            req.user = { id, role };
+            const { sub, role } = decoded as JwtPayload;
+            req.user = { id: sub, role };
             next();
         } else {
             throw new AuthenticationError('Token is malformed.');
         }
     } catch (error) {
-        // Pass a standardized error for any failure (invalid signature, expiration, etc.)
         next(new AuthenticationError('Invalid or expired token.'));
     }
 };

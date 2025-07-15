@@ -177,10 +177,10 @@ export class UnexpectedError extends DomainError {
 }
 
 /**
- * Thrown when a user is unauthenticated
+ * Thrown when authentication fails.
  */
 export class AuthenticationError extends DomainError {
-    constructor(message = 'Authentication required') {
+    constructor(message = 'Authentication failed.') {
         super(message);
     }
 
