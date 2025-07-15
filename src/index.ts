@@ -2,8 +2,8 @@ import { configDotenv } from "dotenv";
 configDotenv();
 
 import mongoose from "mongoose";
-import app from "./Shared/app.js";
-import connectDB from "./Shared/connect.js";
+import app from "./Shared/App.js";
+import connectDB from "./Shared/Connect.js";
 
 const PORT = process.env.PORT || 3000;
 

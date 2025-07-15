@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
-import { SignUpUseCase } from "../../../Application/Users/signUp.js";
-import { SignInUseCase } from "../../../Application/Users/signIn.js";
+import { SignUp } from "../../../Application/Users/signUp.js";
+import { SignIn } from "../../../Application/Users/signIn.js";
 
 export class UserController {
     constructor(
-        private readonly signUpUseCase: SignUpUseCase,
-        private readonly signInUseCase: SignInUseCase,
+        private readonly signUpUseCase: SignUp,
+        private readonly signInUseCase: SignIn,
         // private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     ) {}
 
