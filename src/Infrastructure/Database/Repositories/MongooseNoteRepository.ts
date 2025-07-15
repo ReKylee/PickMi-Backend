@@ -111,4 +111,14 @@ export class MongooseNoteRepository implements IAdminNoteRepository {
             return okAsync(undefined);
         });
     }
+    public deleteManyByUserId(
+        userId: UniqueEntityID,
+    ): ResultAsync<void, RepositoryError> {
+        return fromPromise(
+            NoteModel.deleteMany({ userId: userId.toString() })
+                .exec()
+                .then(() => undefined),
+            (err) => new RepositoryError('Failed to bulk delete notes', err),
+        );
+    }
 }

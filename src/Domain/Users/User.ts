@@ -1,7 +1,7 @@
 import { errAsync, okAsync, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 import 'zod-neverthrow';
-import { ValidationError } from '../../Shared/Errors.js';
+import { UnexpectedError, ValidationError } from '../../Shared/Errors.js';
 import { DomainEntity } from '../Shared/DomainEntity.js';
 import { Email } from '../ValueObjects/Email.js';
 import { Password } from '../ValueObjects/Password.js';
@@ -65,16 +65,13 @@ export class User extends DomainEntity<UserProps> {
     public static reconstitute(props: UserProps, id: UniqueEntityID): User {
         return new User(props, id);
     }
-    /**
-     * Compares a plaintext password with the user's stored password.
-     * @param {string} candidatePassword - The plaintext password to check.
-     * @returns {Promise<boolean>}
-     */
-    public async comparePassword(candidatePassword: string): Promise<boolean> {
-        return this.props.password.compare(candidatePassword);
+    public comparePassword(
+        candidatePassword: string,
+    ): ResultAsync<boolean, UnexpectedError> {
+        return this.props.password
+            .compare(candidatePassword)
+            .mapErr((e) => new UnexpectedError(e));
     }
-
-    // --- Getter methods to access entity properties ---
 
     get email(): Email {
         return this.props.email;

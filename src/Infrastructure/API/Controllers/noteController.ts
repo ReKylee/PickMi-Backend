@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CreateNote } from '../../../Application/Notes/createNote.js';
 import { GetNearbyNotes } from '../../../Application/Notes/getNearbyNotes.js';
 import { AuthenticatedRequest } from '../../../Shared/Middlewares/authMiddleware.js';
-import { GetNoteById } from '../../../Application/Notes/GetNoteById.js';
+import { GetNoteById } from '../../../Application/Notes/getNoteById.js';
 
 export class NoteController {
     constructor(

@@ -19,11 +19,23 @@ export interface IUserRepository {
     findByEmail(
         email: Email,
     ): ResultAsync<User, NotFoundError | RepositoryError | ValidationError>;
+    deleteById(
+        userId: UniqueEntityID,
+    ): ResultAsync<void, NotFoundError | RepositoryError>;
+
+    // Pass Reset
+    findByPasswordResetToken(
+        token: string,
+    ): ResultAsync<User | undefined, RepositoryError>;
     setPasswordResetToken(
         userId: UniqueEntityID,
         token: string,
         expiresAt: Date,
     ): ResultAsync<void, DomainError>;
+    updatePasswordByResetToken(
+        token: string,
+        newPassword: import('../ValueObjects/Password.js').Password,
+    ): ResultAsync<void, RepositoryError>;
 }
 
 export interface IAdminUserRepository extends IUserRepository {

@@ -20,13 +20,93 @@ import {
     ValidationError,
 } from '../../../Shared/Errors.js';
 import { UserDocument, UserModel } from '../Models/UserModel.js';
+import { Password } from '../../../Domain/ValueObjects/Password.js';
+
+type UserFindManyQuery = Query<UserDocument[], UserDocument>;
 
 export class MongooseUserRepository implements IAdminUserRepository {
-    /**
-     * Generic helper to execute find queries and map results, reducing code duplication.
-     */
-    private _executeFindQuery(
-        query: Query<UserDocument[], UserDocument>,
+    public findByPasswordResetToken(
+        token: string,
+    ): ResultAsync<User | undefined, RepositoryError> {
+        return fromPromise(
+            UserModel.findOne({
+                passwordResetToken: token,
+                passwordResetExpires: { $gt: new Date() },
+            }).exec(),
+            (err) =>
+                new RepositoryError(
+                    'Database query failed for findByPasswordResetToken',
+                    err,
+                ),
+        ).andThen((doc) => {
+            if (!doc) {
+                return okAsync(undefined);
+            }
+            return UserMapper.toDomain(doc).match(
+                (user) => okAsync(user),
+                (err) =>
+                    errAsync(
+                        new RepositoryError(
+                            'Failed to map user from password reset token',
+                            err,
+                        ),
+                    ),
+            );
+        });
+    }
+
+    public updatePasswordByResetToken(
+        token: string,
+        newPassword: Password,
+    ): ResultAsync<void, RepositoryError> {
+        return fromPromise(
+            UserModel.findOneAndUpdate(
+                {
+                    passwordResetToken: token,
+                    passwordResetExpires: { $gt: new Date() },
+                },
+                {
+                    $set: {
+                        password: newPassword.value,
+                        passwordResetToken: undefined,
+                        passwordResetExpires: undefined,
+                    },
+                },
+                { new: true },
+            ).exec(),
+            (err) =>
+                new RepositoryError(
+                    'Failed to update password by reset token',
+                    err,
+                ),
+        ).andThen((doc) => {
+            if (!doc) {
+                return errAsync(
+                    new RepositoryError(
+                        'Invalid or expired password reset token',
+                    ),
+                );
+            }
+            return okAsync(undefined);
+        });
+    }
+
+    private _mapSingleUserResult(
+        doc: UserDocument | null,
+        notFoundId?: string,
+    ): ResultAsync<User, NotFoundError | ValidationError> {
+        if (!doc) {
+            return errAsync(new NotFoundError('User', notFoundId));
+        }
+        // UserMapper.toDomain returns Result<User, ValidationError>
+        return UserMapper.toDomain(doc).match(
+            (user) => okAsync(user),
+            (err) => errAsync(err),
+        );
+    }
+
+    private _executeFindManyQuery(
+        query: UserFindManyQuery,
         errorMessage: string,
     ): ResultAsync<User[], RepositoryError> {
         return fromPromise(
@@ -45,9 +125,6 @@ export class MongooseUserRepository implements IAdminUserRepository {
             );
     }
 
-    /**
-     * Handles Mongo's duplicate key error (11000) and wraps it in a ConflictError.
-     */
     private _handleSaveError(err: unknown): RepositoryError | ConflictError {
         if (
             err instanceof mongoose.mongo.MongoServerError &&
@@ -55,9 +132,23 @@ export class MongooseUserRepository implements IAdminUserRepository {
         ) {
             return new ConflictError('A user with that email already exists.');
         }
-
         return new RepositoryError('Failed to save user', err);
     }
+
+    private _deleteUserById(
+        userId: UniqueEntityID,
+    ): ResultAsync<void, NotFoundError | RepositoryError> {
+        return fromPromise(
+            UserModel.findByIdAndDelete(userId.toString()).exec(),
+            (err) => new RepositoryError('Failed to delete user', err),
+        ).andThen((doc) => {
+            if (!doc) {
+                return errAsync(new NotFoundError('User', userId.toString()));
+            }
+            return okAsync(undefined);
+        });
+    }
+
     public save(
         user: User,
     ): ResultAsync<User, RepositoryError | ConflictError> {
@@ -78,12 +169,7 @@ export class MongooseUserRepository implements IAdminUserRepository {
             UserModel.findById(id.toString()).exec(),
             (err) =>
                 new RepositoryError('Database query failed for findById', err),
-        ).andThen((doc) => {
-            if (!doc) {
-                return errAsync(new NotFoundError('User', id.toString()));
-            }
-            return UserMapper.toDomain(doc);
-        });
+        ).andThen((doc) => this._mapSingleUserResult(doc, id.toString()));
     }
 
     public findByEmail(
@@ -96,32 +182,29 @@ export class MongooseUserRepository implements IAdminUserRepository {
                     'Database query failed for findByEmail',
                     err,
                 ),
-        ).andThen((doc) => {
-            if (!doc) {
-                return errAsync(new NotFoundError('User', email.value));
-            }
-            return UserMapper.toDomain(doc);
-        });
+        ).andThen((doc) => this._mapSingleUserResult(doc, email.value));
     }
 
     public findAll(): ResultAsync<User[], RepositoryError> {
-        const query = UserModel.find({});
-        return this._executeFindQuery(query, 'Failed to fetch all users');
+        return this._executeFindManyQuery(
+            UserModel.find({}),
+            'Failed to fetch all users',
+        );
     }
 
     public deleteByAdmin(
         userId: UniqueEntityID,
     ): ResultAsync<void, NotFoundError | RepositoryError | ForbiddenError> {
-        return fromPromise(
-            UserModel.findByIdAndDelete(userId.toString()).exec(),
-            (err) => new RepositoryError('Failed to delete user', err),
-        ).andThen((doc) => {
-            if (!doc) {
-                return errAsync(new NotFoundError('User', userId.toString()));
-            }
-            return okAsync(undefined);
-        });
+        // In a real implementation you might check for admin permissions here.
+        return this._deleteUserById(userId);
     }
+
+    public deleteById(
+        userId: UniqueEntityID,
+    ): ResultAsync<void, NotFoundError | RepositoryError> {
+        return this._deleteUserById(userId);
+    }
+
     public setPasswordResetToken(
         userId: UniqueEntityID,
         token: string,

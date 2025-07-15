@@ -44,4 +44,7 @@ export interface IAdminNoteRepository extends INoteRepository {
     deleteByAdmin(
         noteId: UniqueEntityID,
     ): ResultAsync<void, NotFoundError | RepositoryError | ForbiddenError>;
+    deleteManyByUserId(
+        userId: UniqueEntityID,
+    ): ResultAsync<void, RepositoryError>;
 }

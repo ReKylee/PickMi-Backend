@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { ResultAsync } from 'neverthrow';
 import bcrypt from 'bcrypt';
-import { ValidationError } from '../../Shared/Errors.js';
+import { ResultAsync } from 'neverthrow';
+import { z } from 'zod';
+import { UnexpectedError, ValidationError } from '../../Shared/Errors.js';
 
 const passwordSchema = z
     .string()
@@ -28,30 +28,18 @@ export class Password {
             .mapErr((e) => new ValidationError(e));
     }
 
-    /**
-     * Creates a Password instance from an already hashed string.
-     * This is useful for rehydrating the object from a database.
-     * @param {string} hashedPassword - The stored password hash.
-     * @returns {Password}
-     */
     public static fromHash(hashedPassword: string): Password {
         return new Password(hashedPassword);
     }
 
-    /**
-     * Returns the hashed password value.
-     * @returns {string}
-     */
     public get value(): string {
         return this._value;
     }
 
-    /**
-     * Compares a plaintext password against the stored hash.
-     * @param {string} candidate - The plaintext password to compare.
-     * @returns {Promise<boolean>} True if the passwords match.
-     */
-    public async compare(candidate: string): Promise<boolean> {
-        return bcrypt.compare(candidate, this._value);
+    public compare(candidate: string): ResultAsync<boolean, UnexpectedError> {
+        return ResultAsync.fromPromise(
+            bcrypt.compare(candidate, this._value),
+            (err) => new UnexpectedError(err),
+        );
     }
 }
