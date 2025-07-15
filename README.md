@@ -1,16 +1,225 @@
-# PickMi-Backend Web App API Specification
+# PickMi-Backend Web Application
 
-This document defines the API contract between the frontend (HTML/CSS/JS) and the backend (Node.js/Express) for the anonymous note-throwing web application PickMi.
+This is the backend implementation for PickMi, an anonymous note-throwing web application built with Node.js, Express, TypeScript, and MongoDB. The project follows clean architecture principles with a well-structured domain-driven design.
 
 ---
 
-### General Best Practices
+## 🏗️ Architecture Overview
 
-- **Base URL**: All API routes should be prefixed, for example: `/api`.
-- **Authentication**: After a user signs in, the backend will provide a JSON Web Token (JWT). The frontend must send this JWT in the `Authorization` header for all protected requests (like creating or viewing notes).
+This backend implements a **Clean Architecture** pattern with the following layers:
+
+- **Domain Layer**: Core business logic, entities, and value objects
+- **Application Layer**: Use cases and application services  
+- **Infrastructure Layer**: External concerns (database, API routes, services)
+- **Shared Layer**: Cross-cutting concerns (errors, middleware, utilities)
+
+### Technology Stack
+
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM  
+- **Authentication**: JWT-based authentication
+- **Validation**: Zod for schema validation
+- **Error Handling**: Custom domain error types with neverthrow Result pattern
+
+---
+
+## 🚧 Current Implementation Status
+
+**⚠️ Note**: This project is currently in development. While the architectural foundation is complete, most API endpoints are not yet implemented.
+
+### ✅ Implemented Components
+
+- **Domain Models**: User and Note entities with proper value objects
+- **Database Models**: MongoDB schemas for Users and Notes with geospatial indexing
+- **Authentication Middleware**: JWT-based authentication with role-based access
+- **Error Handling**: Comprehensive error types and middleware
+- **Use Cases**: User signup and signin business logic
+- **Infrastructure**: Repository pattern with MongoDB implementation
+
+### 🔄 In Progress / Planned
+
+- **API Routes**: HTTP endpoints are stubbed but not connected to use cases
+- **Note Operations**: Creating and retrieving notes functionality  
+- **Admin Operations**: User and note management endpoints
+- **Location Validation**: Geographic proximity verification
+- **Password Reset**: Email-based password recovery
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- MongoDB (local installation or MongoDB Atlas)
+- npm or yarn package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ReKylee/PickMi-Backend.git
+   cd PickMi-Backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env` file in the root directory:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/pickmi
+   JWT_SECRET=your_jwt_secret_key
+   NODE_ENV=development
+   ```
+
+4. **Build the project**
+   ```bash
+   npm run build
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+### Available Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run start` - Start the production server
+- `npm run dev` - Start the development server with hot reload
+
+---
+
+## 🔧 Current Working Features
+
+### ✅ Infrastructure Components
+
+The following components are fully implemented and functional:
+
+#### Authentication Middleware
+- JWT token validation and parsing
+- Role-based access control (user/admin)
+- Proper error handling for invalid/expired tokens
+
+#### Error Handling System  
+- Custom domain error classes with proper HTTP status codes
+- Global error middleware that formats responses consistently
+- Support for validation errors with detailed field-level feedback
+
+#### Database Models
+- **User Model**: Email, password, role with proper validation
+- **Note Model**: Title, content (text + drawing), location with 2dsphere indexing
+- MongoDB connection with graceful shutdown handling
+
+#### Domain Layer
+- **User Entity**: Email and password value objects with validation
+- **Note Entity**: Title, content, and location value objects  
+- **Use Cases**: SignUp and SignIn business logic implemented
+
+### ⚠️ Stub Implementations
+
+The following routes exist but are not yet connected to business logic:
+
+- `POST /api/auth/*` - Authentication endpoints (middleware only)
+- `POST /api/notes/*` - Note management endpoints (middleware only)  
+- `POST /api/admin/*` - Admin endpoints (middleware only)
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── Application/           # Use cases and application services
+│   ├── Notes/            # Note-related use cases
+│   │   ├── createNote.ts      # Create note use case
+│   │   └── getNearbyNotes.ts  # Get nearby notes use case
+│   └── Users/            # User-related use cases
+│       ├── signIn.ts          # User signin use case
+│       └── signUp.ts          # User signup use case
+│
+├── Domain/               # Core business logic
+│   ├── Notes/           # Note domain entities
+│   │   ├── Note.ts           # Note entity
+│   │   ├── INoteRepository.ts # Note repository interface
+│   │   └── NoteMapper.ts     # Note data mapping
+│   ├── Users/           # User domain entities
+│   │   ├── User.ts           # User entity
+│   │   ├── IUserRepository.ts # User repository interface
+│   │   └── UserMapper.ts     # User data mapping
+│   ├── Services/        # Domain services interfaces
+│   ├── Shared/          # Shared domain logic
+│   └── ValueObjects/    # Value object implementations
+│       ├── Email.ts          # Email validation
+│       ├── Password.ts       # Password validation
+│       ├── Location.ts       # Geographic location
+│       └── ...
+│
+├── Infrastructure/      # External concerns
+│   ├── API/
+│   │   ├── Controllers/      # HTTP controllers (partially implemented)
+│   │   └── Routes/          # Express route definitions (stubs)
+│   ├── Database/
+│   │   ├── Models/          # MongoDB schemas
+│   │   └── Repositories/    # Repository implementations
+│   └── Services/        # External service implementations
+│       └── JWTAuthService.ts # JWT authentication service
+│
+├── Shared/              # Cross-cutting concerns
+│   ├── Middlewares/     # Express middlewares
+│   │   ├── authMiddleware.ts    # JWT authentication
+│   │   ├── errorMiddleware.ts   # Global error handling
+│   │   └── requireAdmin.ts     # Admin role validation
+│   ├── App.ts           # Express app configuration
+│   ├── Connect.ts       # Database connection
+│   └── Errors.ts        # Custom error definitions
+│
+└── index.ts             # Application entry point
+```
+
+---
+
+## 🛠️ Development Guidelines
+
+### Error Handling
+
+The application uses a comprehensive error handling system with custom domain errors:
+
+- **ValidationError** (400): Input validation failures
+- **AuthenticationError** (401): Authentication failures  
+- **ForbiddenError** (403): Authorization failures
+- **NotFoundError** (404): Resource not found
+- **ConflictError** (409): Resource conflicts (e.g., duplicate email)
+- **BusinessRuleViolationError** (422): Domain rule violations
+- **RepositoryError** (500): Database operation failures
+- **UnexpectedError** (500): Unhandled exceptions
+
+### Architecture Patterns
+
+- **Repository Pattern**: Data access abstraction
+- **Use Case Pattern**: Application logic encapsulation  
+- **Value Objects**: Domain validation and type safety
+- **Result Pattern**: Functional error handling with neverthrow
+- **Dependency Injection**: Loose coupling between layers
+
+---
+
+## 📋 API Specification (Planned)
+
+**The following API specification describes the planned endpoints. Currently, only the foundational infrastructure is implemented.**
+
+### General Design Principles
+
+- **Base URL**: All API routes are prefixed with `/api`
+- **Authentication**: JWT-based authentication using Bearer tokens in the `Authorization` header
   - **Header Format**: `Authorization: Bearer <your_jwt_here>`
-  - **Role-Based Access**: The JWT also includes a `role` field, which can be `"user"` or `"admin"`. Some routes require an admin role; attempting to access them as a regular user will result in a `403 Forbidden error`.
-- **Standard Error Response**: Use a consistent error format for all failed requests. This helps the frontend handle errors gracefully.
+  - **Role-Based Access**: JWTs include a `role` field (`"user"` or `"admin"`) for authorization
+- **Error Handling**: Consistent error format using custom domain error types
   [View domain error definitions](./src/Shared/Errors.ts)
   **EXAMPLE**: 
   ```json
@@ -51,9 +260,9 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
 
 ---
 
-## 🔐 Authentication Endpoints
+## 🔐 Authentication Endpoints (Planned)
 
-These endpoints handle user sign-up, sign-in, and password recovery.
+**⚠️ Status**: Infrastructure exists, but HTTP endpoints are not yet implemented.
 
 ### 1. User Sign Up
 
@@ -206,9 +415,9 @@ These endpoints handle user sign-up, sign-in, and password recovery.
     
 ---
 
-## 📝 Note & Location Endpoints
+## 📝 Note & Location Endpoints (Planned)
 
-These endpoints are for the core functionality of the app.
+**⚠️ Status**: Domain models and use cases exist, but HTTP endpoints are not yet implemented.
 
 ### 1. Throw a Note
 
@@ -356,7 +565,9 @@ These endpoints are for the core functionality of the app.
     
 ---
 
-## 📝 Admin Endpoints
+## 👨‍💼 Admin Endpoints (Planned)
+
+**⚠️ Status**: Route stubs exist, but functionality is not yet implemented.
 
 ### 1. Get All Users
 
