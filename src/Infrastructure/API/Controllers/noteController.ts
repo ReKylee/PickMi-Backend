@@ -7,7 +7,7 @@ import { ILocationService } from '../../../Domain/Services/ILocationService.js';
 import { UniqueEntityID } from '../../../Domain/ValueObjects/UniqueEntityID.js';
 import {
     AuthenticationError,
-    NotFoundError,
+    BusinessRuleViolationError,
     ValidationError,
 } from '../../../Shared/Errors.js';
 import { AuthenticatedRequest } from '../../../Shared/Middlewares/authMiddleware.js';
@@ -99,7 +99,11 @@ export class NoteController {
             )
             .andThen((note) => {
                 if (!note) {
-                    return errAsync(new NotFoundError('Nearby Note', id));
+                    return errAsync(
+                        new BusinessRuleViolationError('Not Nearby Note', {
+                            'Note ID': id,
+                        }),
+                    );
                 }
                 return okAsync(note);
             })

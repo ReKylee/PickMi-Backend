@@ -60,6 +60,7 @@ export class DeleteNearbyById {
                     return errAsync(
                         new BusinessRuleViolationError(
                             'You must be at the note location to delete it.',
+                            noteId,
                         ),
                     );
                 }

@@ -21,6 +21,7 @@ export interface INoteRepository {
         lon: number,
         radius: number,
     ): ResultAsync<Note[], RepositoryError>;
+
     deleteById(id: UniqueEntityID): ResultAsync<void, RepositoryError>;
 }
 
