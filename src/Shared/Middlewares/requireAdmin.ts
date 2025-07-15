@@ -1,9 +1,10 @@
+import { NextFunction } from "express";
 import { ForbiddenError } from "../Errors.js";
-import { AuthenticatedRequest } from "./authMiddleware";
+import { AuthenticatedRequest } from "./authMiddleware.js";
 
 export const requireAdmin = (
     req: AuthenticatedRequest,
-    res: Response,
+    _: Response,
     next: NextFunction,
 ) => {
     if (req.user?.role !== "admin") {
