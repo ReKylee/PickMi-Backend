@@ -1,4 +1,4 @@
-import { ZodError } from "zod";
+import { ZodError, ZodIssue } from 'zod';
 
 export abstract class DomainError extends Error {
     constructor(message: string) {
@@ -29,7 +29,7 @@ export class NotFoundError extends DomainError {
 
     serialize(): SerializedDomainError {
         return {
-            type: "NOT_FOUND",
+            type: 'NOT_FOUND',
             message: this.message,
         };
     }
@@ -42,17 +42,27 @@ export class NotFoundError extends DomainError {
 /**
  * Thrown when Zod or other validation logic fails
  */
+type ValidationSource = ZodError | ValidationError;
+
 export class ValidationError extends DomainError {
-    constructor(private readonly issues: ZodError) {
-        super("Validation failed");
+    private readonly combinedIssues: ZodIssue[];
+
+    constructor(...errors: ValidationSource[]) {
+        super('Validation failed');
+
+        this.combinedIssues = errors.flatMap((err) => {
+            if (err instanceof ZodError) return err.issues;
+            if (err instanceof ValidationError) return err.combinedIssues;
+            return [];
+        });
     }
 
     serialize(): SerializedDomainError {
         return {
-            type: "VALIDATION_ERROR",
+            type: 'VALIDATION_ERROR',
             message: this.message,
-            details: this.issues.issues.map((issue) => ({
-                path: issue.path.join("."),
+            details: this.combinedIssues.map((issue) => ({
+                path: issue.path.join('.'),
                 message: issue.message,
             })),
         };
@@ -76,7 +86,7 @@ export class BusinessRuleViolationError extends DomainError {
 
     serialize(): SerializedDomainError {
         return {
-            type: "BUSINESS_RULE_VIOLATION",
+            type: 'BUSINESS_RULE_VIOLATION',
             message: this.message,
             details: this.context,
         };
@@ -93,18 +103,18 @@ export class BusinessRuleViolationError extends DomainError {
 export class UnexpectedError extends DomainError {
     constructor(error: unknown) {
         const message =
-            process.env.NODE_ENV === "production"
-                ? "An unexpected error occurred."
+            process.env.NODE_ENV === 'production'
+                ? 'An unexpected error occurred.'
                 : error instanceof Error
                   ? `Unexpected error: ${error.message}`
-                  : "Unexpected error of unknown type.";
+                  : 'Unexpected error of unknown type.';
 
         super(message);
     }
 
     serialize(): SerializedDomainError {
         return {
-            type: "UNEXPECTED_ERROR",
+            type: 'UNEXPECTED_ERROR',
             message: this.message,
         };
     }
@@ -118,13 +128,13 @@ export class UnexpectedError extends DomainError {
  * Thrown when a user is unauthenticated
  */
 export class AuthenticationError extends DomainError {
-    constructor(message = "Authentication required") {
+    constructor(message = 'Authentication required') {
         super(message);
     }
 
     serialize(): SerializedDomainError {
         return {
-            type: "AUTHENTICATION_ERROR",
+            type: 'AUTHENTICATION_ERROR',
             message: this.message,
         };
     }
@@ -138,13 +148,13 @@ export class AuthenticationError extends DomainError {
  * Thrown when a user is authenticated but lacks permission
  */
 export class ForbiddenError extends DomainError {
-    constructor(message = "You do not have permission to perform this action") {
+    constructor(message = 'You do not have permission to perform this action') {
         super(message);
     }
 
     serialize(): SerializedDomainError {
         return {
-            type: "FORBIDDEN_ERROR",
+            type: 'FORBIDDEN_ERROR',
             message: this.message,
         };
     }
