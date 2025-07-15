@@ -14,13 +14,6 @@ export interface INoteRepository {
     save(note: Note): ResultAsync<Note, RepositoryError>;
 
     /**
-     * Finds a note by its unique ID
-     */
-    findById(
-        id: UniqueEntityID,
-    ): ResultAsync<Note, NotFoundError | RepositoryError>;
-
-    /**
      * Finds notes near a location (in meters)
      */
     findNearby(
@@ -28,16 +21,7 @@ export interface INoteRepository {
         lon: number,
         radius: number,
     ): ResultAsync<Note[], RepositoryError>;
-
-    /**
-     * Lists all notes by a specific user
-     */
-    findByUserId(userId: UniqueEntityID): ResultAsync<Note[], RepositoryError>;
-
-    /**
-     * Lists all notes in the system (admin only)
-     */
-    findAll(): ResultAsync<Note[], RepositoryError>;
+    deleteById(id: UniqueEntityID): ResultAsync<void, RepositoryError>;
 }
 
 export interface IAdminNoteRepository extends INoteRepository {
@@ -47,4 +31,18 @@ export interface IAdminNoteRepository extends INoteRepository {
     deleteManyByUserId(
         userId: UniqueEntityID,
     ): ResultAsync<void, RepositoryError>;
+    /**
+     * Lists all notes by a specific user
+     */
+    findByUserId(userId: UniqueEntityID): ResultAsync<Note[], RepositoryError>;
+    /**
+     * Lists all notes in the system
+     */
+    findAll(): ResultAsync<Note[], RepositoryError>;
+    /**
+     * Finds a note by its unique ID
+     */
+    findById(
+        id: UniqueEntityID,
+    ): ResultAsync<Note, NotFoundError | RepositoryError>;
 }

@@ -1,15 +1,15 @@
 import { ResultAsync } from 'neverthrow';
-import { INoteRepository } from '../../Domain/Notes/INoteRepository.js';
+import { IAdminNoteRepository } from '../../Domain/Notes/INoteRepository.js';
+import { Note } from '../../Domain/Notes/Note.js';
 import { UniqueEntityID } from '../../Domain/ValueObjects/UniqueEntityID.js';
 import {
     NotFoundError,
     RepositoryError,
     ValidationError,
 } from '../../Shared/Errors.js';
-import { Note } from '../../Domain/Notes/Note.js';
 
 export class GetNoteById {
-    constructor(private readonly noteRepository: INoteRepository) {}
+    constructor(private readonly noteRepository: IAdminNoteRepository) {}
 
     public execute(
         rawId: string,

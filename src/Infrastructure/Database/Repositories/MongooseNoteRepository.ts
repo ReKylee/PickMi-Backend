@@ -111,6 +111,19 @@ export class MongooseNoteRepository implements IAdminNoteRepository {
             return okAsync(undefined);
         });
     }
+    public deleteById(
+        noteId: UniqueEntityID,
+    ): ResultAsync<void, NotFoundError | RepositoryError | ForbiddenError> {
+        return fromPromise(
+            NoteModel.findByIdAndDelete(noteId.toString()).exec(),
+            (err) => new RepositoryError('Failed to delete note', err),
+        ).andThen((doc) => {
+            if (!doc) {
+                return errAsync(new NotFoundError('Note', noteId.toString()));
+            }
+            return okAsync(undefined);
+        });
+    }
     public deleteManyByUserId(
         userId: UniqueEntityID,
     ): ResultAsync<void, RepositoryError> {

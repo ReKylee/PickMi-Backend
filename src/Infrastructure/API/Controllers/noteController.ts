@@ -1,14 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { CreateNote } from '../../../Application/Notes/createNote.js';
 import { GetNearbyNotes } from '../../../Application/Notes/getNearbyNotes.js';
+import { DeleteNearbyById } from '../../../Application/Notes/deleteNearbyById.js';
+import { NotFoundError } from '../../../Shared/Errors.js';
 import { AuthenticatedRequest } from '../../../Shared/Middlewares/authMiddleware.js';
-import { GetNoteById } from '../../../Application/Notes/getNoteById.js';
 
 export class NoteController {
     constructor(
         private readonly createNoteUseCase: CreateNote,
         private readonly getNearbyNotesUseCase: GetNearbyNotes,
-        private readonly getNoteByIdUseCase: GetNoteById,
+        private readonly deleteNoteUseCase: DeleteNearbyById,
     ) {}
 
     public createNote = async (
@@ -19,7 +20,6 @@ export class NoteController {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                // This should be caught by auth middleware, but as a safeguard:
                 throw new Error('User not authenticated');
             }
 
@@ -55,7 +55,7 @@ export class NoteController {
             const result = await this.getNearbyNotesUseCase.execute({
                 latitude: Number(lat),
                 longitude: Number(lon),
-                radius: Number(radius) || 5000, // Default radius 5km
+                radius: Number(radius) || 5000,
             });
 
             if (result.isErr()) {
@@ -76,21 +76,72 @@ export class NoteController {
         }
     };
 
-    public getNoteById = (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
+    public getNearbyNoteById = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { id } = req.params;
+            const lat = Number(req.query.lat);
+            const lon = Number(req.query.lon);
 
-        this.getNoteByIdUseCase
-            .execute(id)
-            .map((note) => ({
+            const nearbyNotesResult = await this.getNearbyNotesUseCase.execute({
+                latitude: lat,
+                longitude: lon,
+                radius: 1000,
+            });
+
+            if (nearbyNotesResult.isErr()) {
+                return next(nearbyNotesResult.error);
+            }
+
+            const note = nearbyNotesResult.value.find(
+                (n) => n.id.toString() === id,
+            );
+
+            if (!note) {
+                return next(new NotFoundError('Nearby Note', id));
+            }
+
+            const noteDto = {
                 id: note.id.toString(),
                 content: {
                     text: note.content.text,
                     drawingData: note.content.drawingData,
                 },
-            }))
-            .match(
-                (noteDto) => res.status(200).json(noteDto),
+            };
+
+            return res.status(200).json(noteDto);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public deleteNote = async (
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { id } = req.params;
+            const { latitude, longitude } = req.body;
+
+            const result = await this.deleteNoteUseCase.execute({
+                id,
+                location: { latitude, longitude },
+            });
+
+            result.match(
+                () => {
+                    res.status(200).json({
+                        message: 'Note deleted successfully.',
+                    });
+                },
                 (error) => next(error),
             );
+        } catch (error) {
+            next(error);
+        }
     };
 }
