@@ -33,7 +33,9 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
     | `AUTHENTICATION_ERROR`    | 401       | `AuthenticationError`        | Missing or bad JWT                         |
     | `FORBIDDEN_ERROR`         | 403       | `ForbiddenError`             | Unauthorized action (e.g., wrong location) |
     | `NOT_FOUND`               | 404       | `NotFoundError`              | Missing notes, users, etc.                 |
+    | `CONFLICT_ERROR`          | 409       | `ConflictError`              | Resource already exists                    |
     | `BUSINESS_RULE_VIOLATION` | 422       | `BusinessRuleViolationError` | Domain logic failures (e.g. duplicates)    |
+    | `REPOSITORY_ERROR`        | 500       | `RepositoryError`            | Database/persistence failures              |
     | `UNEXPECTED_ERROR`        | 500       | `UnexpectedError`            | Server or uncaught issues                  |
 
     **FORMAT**:
@@ -41,7 +43,7 @@ This document defines the API contract between the frontend (HTML/CSS/JS) and th
     ```json
     {
         "error": {
-            "type": "VALIDATION_ERROR", // One of: NOT_FOUND, VALIDATION_ERROR, AUTHENTICATION_ERROR, etc.
+            "type": "VALIDATION_ERROR", // One of: NOT_FOUND, VALIDATION_ERROR, AUTHENTICATION_ERROR, FORBIDDEN_ERROR, CONFLICT_ERROR, BUSINESS_RULE_VIOLATION, REPOSITORY_ERROR, UNEXPECTED_ERROR
             "message": "A human-readable summary",
             "details": {} // Optional field depending on error type
         }
@@ -181,7 +183,7 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 
 ### 5. Delete Account
 
-- **Endpoint**: `DELETE /api/users/me`
+- **Endpoint**: `DELETE /api/auth/me`
 - **Description**: Permanently deletes the authenticated user's account and all their associated data. For security, this action requires the user to re-enter their current password.
 - **Authentication**: **Required**. The backend identifies the user to be deleted via their JWT.
 - **Request Body**:
@@ -227,6 +229,7 @@ These endpoints are for the core functionality of the app.
 
     ```json
     {
+        "title": "My Secret Note",
         "content": {
             "text": "Never gonna give you up...",
             "drawingData": "/* SVG data, base64 image, or another format */"
@@ -279,6 +282,7 @@ These endpoints are for the core functionality of the app.
                         "type": "VALIDATION_ERROR",
                         "message": "Invalid note data.",
                         "details": [
+                            { "path": "title", "message": "Title is required." },
                             { "path": "content.text", "message": "Text is required." },
                             { "path": "location", "message": "Invalid coordinates." }
                         ]
@@ -327,11 +331,14 @@ These endpoints are for the core functionality of the app.
 ### 3. Get a Specific Note's Content
 
 - **Endpoint**: `GET /api/notes/:id`
-- **Description**: Retrieves the full content of a single note.
+- **Description**: Retrieves the full content of a single note. The user must be within 1000 meters of the note's location to access it.
 - **Authentication**: **Required**.
-- **Request Parameter**:
+- **Request Parameters**:
   - `:id`: The ID of the note.
-  - **Example**: `/api/notes/mongo_object_id_123`
+- **Query Parameters**:
+  - `lat`: User's current latitude (required).
+  - `lon`: User's current longitude (required).
+  - **Example**: `/api/notes/mongo_object_id_123?lat=40.7128&lon=-74.0060`
 - **Success Response** (`200 OK`):
 
     ```json
@@ -367,6 +374,53 @@ These endpoints are for the core functionality of the app.
                 }
                 ```
 
+### 4. Delete a Note
+
+- **Endpoint**: `DELETE /api/notes/:id`
+- **Description**: Deletes a specific note. The user must be within 100 meters of the note's location to delete it.
+- **Authentication**: **Required**.
+- **Request Parameters**:
+  - `:id`: The ID of the note.
+- **Request Body**:
+
+    ```json
+    {
+        "latitude": 40.7128,
+        "longitude": -74.006
+    }
+    ```
+
+- **Success Response** (`200 OK`):
+
+    ```json
+    {
+        "message": "Note deleted successfully."
+    }
+    ```
+
+- **Error Responses**:
+  - `422 Unprocessable Entity` → BusinessRuleViolationError
+
+            ```json
+            {
+                "error": {
+                    "type": "BUSINESS_RULE_VIOLATION",
+                    "message": "You must be at the note location to delete it."
+                }
+            }
+            ```
+
+  - `401 Unauthorized` Returned if the JWT is invalid/expired → AuthenticationError
+
+                ```json
+                {
+                    "error": {
+                        "type": "AUTHENTICATION_ERROR",
+                        "message": "Authentication required."
+                    }
+                }
+                ```
+
 ---
 
 ## 📝 Admin Endpoints
@@ -383,12 +437,12 @@ These endpoints are for the core functionality of the app.
         {
             "id": "user123",
             "email": "user@example.com",
-            "createdAt": "2025-06-30T18:00:00.000Z"
+            "role": "user"
         },
         {
             "id": "user456",
             "email": "another@example.com",
-            "createdAt": "2025-07-01T11:45:00.000Z"
+            "role": "admin"
         }
     ]
     ```
@@ -416,6 +470,7 @@ These endpoints are for the core functionality of the app.
         {
             "id": "mongo_object_id_123",
             "userId": "user123",
+            "title": "My Secret Note",
             "content": {
                 "text": "Admin can see this.",
                 "drawingData": null
@@ -424,8 +479,7 @@ These endpoints are for the core functionality of the app.
                 "latitude": 40.7128,
                 "longitude": -74.006,
                 "placeId": "ChIJ..."
-            },
-            "createdAt": "2025-07-08T18:00:00.000Z"
+            }
         }
     ]
     ```
@@ -453,7 +507,7 @@ These endpoints are for the core functionality of the app.
     {
         "id": "user123",
         "email": "user@example.com",
-        "createdAt": "2025-06-30T18:00:00.000Z"
+        "role": "user"
     }
     ```
 
@@ -480,7 +534,49 @@ These endpoints are for the core functionality of the app.
     }
     ```
 
-### 3. View a User's Notes
+### 3. Get a Specific Note's Info
+
+- **Endpoint**: `GET /api/admin/notes/:id`
+- **Description**: Retrieves the content of a specific note by ID.
+- **Authentication**: **Required**. Must have role: "admin" in JWT.
+- **Request Parameter**:
+  - `:id`: The ID of the note.
+- **Success Response** (`200 OK`):
+
+    ```json
+    {
+        "id": "mongo_object_id_123",
+        "content": {
+            "text": "This is the note content",
+            "drawingData": null
+        }
+    }
+    ```
+
+- **Error Response**:
+  - If the note ID does not exist. (`404 Not Found`) → NotFoundError
+
+    ```json
+    {
+        "error": {
+            "type": "NOT_FOUND",
+            "message": "Note not found."
+        }
+    }
+    ```
+
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+
+    ```json
+    {
+        "error": {
+            "type": "FORBIDDEN_ERROR",
+            "message": "Admin access required."
+        }
+    }
+    ```
+
+### 4. View a User's Notes
 
 - **Endpoint**: `GET /api/admin/users/:id/notes`
 - **Description**: Retrieves all notes thrown by a specific user.
@@ -492,6 +588,7 @@ These endpoints are for the core functionality of the app.
     [
         {
             "id": "note123",
+            "title": "My Secret Note",
             "content": {
                 "text": "This user's note",
                 "drawingData": null
@@ -499,8 +596,7 @@ These endpoints are for the core functionality of the app.
             "location": {
                 "latitude": 40.7128,
                 "longitude": -74.006
-            },
-            "createdAt": "2025-07-08T18:00:00.000Z"
+            }
         }
     ]
     ```
@@ -528,7 +624,7 @@ These endpoints are for the core functionality of the app.
     }
     ```
 
-### 4. Delete a User
+### 5. Delete a User
 
 - **Endpoint**: `DELETE /api/admin/users/:id`
 - **Description**: Permanently deletes the specified user and all associated notes.
@@ -565,12 +661,13 @@ These endpoints are for the core functionality of the app.
     }
     ```
 
-### 4. Delete a Note
+### 6. Delete a Note
 
 - **Endpoint**: `DELETE /api/admin/notes/:id`
 - **Description**: Deletes a specific note, regardless of who created it.
 - **Authentication**: **Required**. Must have role: "admin" in JWT.
-- Request Parameter: -`:id`: The ID of the user.
+- **Request Parameter**:
+  - `:id`: The ID of the note.
 - **Success Response** (`200 OK`):
 
     ```json
@@ -580,18 +677,18 @@ These endpoints are for the core functionality of the app.
     ```
 
 - **Error Response**:
-- If the user ID does not exist. (`404 Not Found`) -> NotFoundError
+  - If the note ID does not exist. (`404 Not Found`) → NotFoundError
 
     ```json
     {
         "error": {
             "type": "NOT_FOUND",
-            "message": "User not found."
+            "message": "Note not found."
         }
     }
     ```
 
-- If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
+  - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
 
     ```json
     {
