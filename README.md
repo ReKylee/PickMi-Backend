@@ -344,6 +344,7 @@ These endpoints are for the core functionality of the app.
     ```json
     {
         "id": "mongo_object_id_123",
+        "title": "Rock Ashley",
         "content": {
             "text": "Never gonna give you up...",
             "drawingData": "/* SVG data... */"
