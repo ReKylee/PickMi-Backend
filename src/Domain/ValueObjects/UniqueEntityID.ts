@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { z } from 'zod';
-import { err, ok, Result } from 'neverthrow';
+import { Result } from 'neverthrow';
 import { ValidationError } from '../../Shared/Errors.js';
 
 const uuidSchema = z.object({

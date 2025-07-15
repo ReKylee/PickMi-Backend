@@ -62,7 +62,9 @@ export class User extends DomainEntity<UserProps> {
                     .mapErr((errors) => new ValidationError(...errors));
             });
     }
-
+    public static reconstitute(props: UserProps, id: UniqueEntityID): User {
+        return new User(props, id);
+    }
     /**
      * Compares a plaintext password with the user's stored password.
      * @param {string} candidatePassword - The plaintext password to check.

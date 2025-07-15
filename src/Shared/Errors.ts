@@ -4,7 +4,7 @@ export abstract class DomainError extends Error {
     constructor(message: string) {
         super(message);
         this.name = this.constructor.name;
-        Object.setPrototypeOf(this, new.target.prototype); // Ensure correct prototype chain
+        Object.setPrototypeOf(this, new.target.prototype);
     }
 
     public abstract serialize(): SerializedDomainError;
@@ -36,6 +36,26 @@ export class NotFoundError extends DomainError {
 
     getStatusCode(): number {
         return 404;
+    }
+}
+
+/**
+ * Thrown when an data is conflicting in the database
+ */
+export class ConflictError extends DomainError {
+    constructor(message = 'The resource already exists.') {
+        super(message);
+    }
+
+    serialize(): SerializedDomainError {
+        return {
+            type: 'CONFLICT_ERROR',
+            message: this.message,
+        };
+    }
+
+    getStatusCode(): number {
+        return 409; // HTTP 409 Conflict
     }
 }
 

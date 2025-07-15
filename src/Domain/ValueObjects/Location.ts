@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Result, ok, err } from 'neverthrow';
+import { Result } from 'neverthrow';
 import { ValidationError } from '../../Shared/Errors.js';
 
 const locationSchema = z.object({

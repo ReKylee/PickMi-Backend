@@ -55,6 +55,10 @@ export class Note extends DomainEntity<NoteProps> {
             );
     }
 
+    public static reconstitute(props: NoteProps, id: UniqueEntityID): Note {
+        return new Note(props, id);
+    }
+
     get title(): Title {
         return this.props.title;
     }

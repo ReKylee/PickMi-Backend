@@ -1,15 +1,15 @@
-import mongoose, { Schema, Document, Model, ObjectId } from 'mongoose';
+import mongoose, { Schema, Document, Model, Types } from 'mongoose';
 
-export interface IUserDocument extends Document {
-    _id: ObjectId;
+export interface UserDocument extends Document {
+    _id: Types.ObjectId;
     email: string;
     password: string;
     role: 'user' | 'admin';
 }
 
-const UserSchema: Schema<IUserDocument> = new Schema(
+const UserSchema: Schema<UserDocument> = new Schema(
     {
-        _id: { type: String, required: true },
+        _id: { type: Schema.Types.ObjectId, required: true },
         email: {
             type: String,
             required: true,
@@ -32,7 +32,5 @@ const UserSchema: Schema<IUserDocument> = new Schema(
     },
 );
 
-const UserModel: Model<IUserDocument> =
-    mongoose.models.User || mongoose.model<IUserDocument>('User', UserSchema);
-
-export default UserModel;
+export const UserModel: Model<UserDocument> =
+    mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);
