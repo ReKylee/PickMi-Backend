@@ -27,7 +27,8 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.16.2",
         "neverthrow": "^8.2.0",
-        "zod": "^3.25.76"
+        "zod": "^3.25.76",
+        "zod-neverthrow": "^1.0.0"
     },
     "devDependencies": {
         "@types/bcrypt": "^5.0.2",

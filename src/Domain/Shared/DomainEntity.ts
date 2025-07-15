@@ -1,4 +1,4 @@
-import { UniqueEntityID } from "../ValueObjects/UniqueEntityID";
+import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
 
 export abstract class DomainEntity<T> {
     protected readonly _id: UniqueEntityID;

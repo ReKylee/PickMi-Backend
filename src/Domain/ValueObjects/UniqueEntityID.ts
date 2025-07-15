@@ -1,15 +1,15 @@
-import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
-import { Result } from "typescript-result";
-import { ErrorMapper } from "../../Application/Errors/ErrorMapper";
+import { randomUUID } from 'crypto';
+import { z } from 'zod';
+import { err, ok, Result } from 'neverthrow';
+import { ValidationError } from '../../Shared/Errors.js';
 
 const uuidSchema = z.object({
     id: z
         .string({
-            required_error: "UUID is required",
-            invalid_type_error: "UUID must be a string",
+            required_error: 'UUID is required',
+            invalid_type_error: 'UUID must be a string',
         })
-        .uuid({ message: "Invalid UUID format" }),
+        .uuid({ message: 'Invalid UUID format' }),
 });
 
 export type UniqueEntityIDProps = { id: string };
@@ -21,17 +21,18 @@ export class UniqueEntityID {
         this.value = id;
     }
     public static create(): UniqueEntityID {
-        return new UniqueEntityID(uuidv4());
+        return new UniqueEntityID(randomUUID());
     }
 
-    public static from(id: string): Result<UniqueEntityID, Error> {
-        const result = uuidSchema.safeParse({ id });
-        if (!result.success) {
-            return Result.error(ErrorMapper.mapZodError(result.error));
+    public static from(id: string): Result<UniqueEntityID, ValidationError> {
+        const validationResult = uuidSchema.safeParse({ id });
+
+        if (validationResult.success) {
+            return ok(new UniqueEntityID(validationResult.data.id));
+        } else {
+            return err(new ValidationError(validationResult.error));
         }
-        return Result.ok(new UniqueEntityID(result.data.id));
     }
-
     public toString(): string {
         return this.value;
     }
