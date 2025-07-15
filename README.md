@@ -209,6 +209,48 @@ The application uses a comprehensive error handling system with custom domain er
 
 ---
 
+## 🤝 Contributing
+
+### Development Workflow
+
+1. **Architecture First**: Follow the clean architecture principles
+2. **Domain-Driven**: Start with domain entities and use cases
+3. **Test Infrastructure**: Test individual components before integration
+4. **Error Handling**: Use the established error types and patterns
+
+### Next Development Steps
+
+To complete the API implementation, the following work is needed:
+
+1. **Connect Routes to Use Cases**
+   - Wire up existing SignUp/SignIn use cases to HTTP controllers
+   - Implement missing use cases (CreateNote, GetNearbyNotes, etc.)
+   - Connect controllers to route handlers
+
+2. **Complete Missing Use Cases**
+   - Password reset functionality
+   - Note creation with location validation
+   - Admin operations (user/note management)
+
+3. **Add Business Logic**
+   - Geographic proximity validation for note creation
+   - Email service for password reset
+   - Admin role management
+
+4. **Testing**
+   - Unit tests for domain logic
+   - Integration tests for API endpoints
+   - End-to-end testing
+
+### Code Style
+
+- Use TypeScript strict mode
+- Follow functional programming patterns with neverthrow
+- Implement proper error handling at all layers
+- Use dependency injection for loose coupling
+
+---
+
 ## 📋 API Specification (Planned)
 
 **The following API specification describes the planned endpoints. Currently, only the foundational infrastructure is implemented.**
@@ -777,3 +819,42 @@ The application uses a comprehensive error handling system with custom domain er
       }
     }
     ```
+
+
+---
+
+## ⚠️ Known Limitations
+
+### Current State
+- **No HTTP Endpoints**: Routes exist but return empty responses
+- **No Database Seeding**: No initial admin user or test data
+- **No Email Service**: Password reset functionality incomplete
+- **No Location Validation**: Geographic proximity checking not implemented
+- **No Tests**: No unit or integration tests currently exist
+
+### Production Readiness
+This codebase is **not production-ready**. The following must be completed before deployment:
+
+- Complete HTTP endpoint implementation
+- Add comprehensive testing
+- Implement proper logging and monitoring
+- Add rate limiting and security headers
+- Set up database migrations and seeding
+- Configure production environment variables
+- Add CI/CD pipeline
+
+---
+
+## 📝 License
+
+ISC License - see package.json for details.
+
+---
+
+## 👥 Author
+
+**Kylee Benisty** - [ReKylee](https://github.com/ReKylee)
+
+---
+
+*This README reflects the current state of the PickMi-Backend as of the latest update. The project demonstrates a solid architectural foundation with clean code principles, ready for continued development of the HTTP API layer.*
