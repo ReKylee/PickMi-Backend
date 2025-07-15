@@ -8,6 +8,7 @@ import {
     UnexpectedError,
     ValidationError,
 } from '../../Shared/Errors.js';
+import { Email } from '../../Domain/ValueObjects/Email.js';
 
 export interface SignInDTO {
     email: string;
@@ -26,8 +27,13 @@ export class SignIn {
         { user: User; token: string },
         ValidationError | AuthenticationError | UnexpectedError
     > {
+        const emailResult = Email.create(dto.email);
+
+        if (emailResult.isErr())
+            return errAsync(new ValidationError(emailResult.error));
+
         return this.userRepository
-            .findByEmail(dto.email)
+            .findByEmail(emailResult.value)
             .mapErr((err) => {
                 if (err instanceof NotFoundError) {
                     return new AuthenticationError('Invalid credentials');

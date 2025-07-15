@@ -1,56 +1,76 @@
-import { Request, Response, NextFunction } from "express";
-
-import { SignUpUseCase } from "../../../Application/Users/signUp.js";
-import { SignInUseCase } from "../../../Application/Users/signIn.js";
+import { NextFunction, Request, Response } from 'express';
+import { ForgottenPasswordHandler } from '../../../Application/Users/forgottenPassword.js';
+import { SignIn } from '../../../Application/Users/signIn.js';
+import { SignUp } from '../../../Application/Users/signUp.js';
+import { ValidationError } from '../../../Shared/Errors.js';
 
 export class UserController {
     constructor(
-        private readonly signUpUseCase: SignUpUseCase,
-        private readonly signInUseCase: SignInUseCase,
-        // private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+        private readonly signUpUseCase: SignUp,
+        private readonly signInUseCase: SignIn,
+        private readonly forgotPasswordUseCase: ForgottenPasswordHandler,
     ) {}
 
-    /**
-     * Handles the HTTP request for the POST /api/auth/signup endpoint.
-     */
     public signUp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
+            const result = await this.signUpUseCase.execute({
+                email,
+                password,
+            });
 
-            // Delegate the actual work to the sign-up use case
-            await this.signUpUseCase.execute({ email, password });
+            if (result.isErr()) {
+                return next(result.error);
+            }
 
-            // According to your README, send a success message
-            return res
-                .status(201)
-                .json({ message: "User created successfully." });
+            return res.status(201).json({
+                message: 'User created successfully. Please sign in.',
+            });
         } catch (error) {
-            // If any error occurs (e.g., ValidationError, BusinessRuleError),
-            // pass it to the global error handler middleware.
             next(error);
         }
     };
 
-    /**
-     * Handles the HTTP request for the POST /api/auth/signin endpoint.
-     */
     public signIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
-
-            // Delegate the work to the sign-in use case
             const result = await this.signInUseCase.execute({
                 email,
                 password,
             });
 
-            // Send the token back on success, as defined in the README
-            return res.status(200).json(result);
+            if (result.isErr()) {
+                return next(result.error);
+            }
+
+            return res.status(200).json(result.value);
         } catch (error) {
-            // Pass any AuthenticationError to the global error handler
             next(error);
         }
     };
 
-    // public forgotPassword = async (req: Request, res: Response, next: NextFunction) => { ... }
+    public forgotPassword = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        const { email } = req.body;
+
+        const result = await this.forgotPasswordUseCase.handle(email);
+
+        if (result.isErr()) {
+            // Always respond with success to prevent email enumeration
+            if (result.error instanceof ValidationError) {
+                return next(result.error); // let validation errors propagate
+            }
+
+            // Log other errors for observability
+            console.error('Forgot password error:', result.error);
+        }
+
+        return res.status(200).json({
+            message:
+                'If an account with that email exists, a password reset link has been sent.',
+        });
+    };
 }

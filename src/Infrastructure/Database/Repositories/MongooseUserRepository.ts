@@ -9,9 +9,11 @@ import {
 import { IAdminUserRepository } from '../../../Domain/Users/IUserRepository.js';
 import { User } from '../../../Domain/Users/User.js';
 import { UserMapper } from '../../../Domain/Users/UserMapper.js';
+import { Email } from '../../../Domain/ValueObjects/Email.js';
 import { UniqueEntityID } from '../../../Domain/ValueObjects/UniqueEntityID.js';
 import {
     ConflictError,
+    DomainError,
     ForbiddenError,
     NotFoundError,
     RepositoryError,
@@ -85,10 +87,10 @@ export class MongooseUserRepository implements IAdminUserRepository {
     }
 
     public findByEmail(
-        email: string,
+        email: Email,
     ): ResultAsync<User, NotFoundError | RepositoryError | ValidationError> {
         return fromPromise(
-            UserModel.findOne({ email }).exec(),
+            UserModel.findOne({ email: email.value }).exec(),
             (err) =>
                 new RepositoryError(
                     'Database query failed for findByEmail',
@@ -96,7 +98,7 @@ export class MongooseUserRepository implements IAdminUserRepository {
                 ),
         ).andThen((doc) => {
             if (!doc) {
-                return errAsync(new NotFoundError('User', email));
+                return errAsync(new NotFoundError('User', email.value));
             }
             return UserMapper.toDomain(doc);
         });
@@ -119,5 +121,23 @@ export class MongooseUserRepository implements IAdminUserRepository {
             }
             return okAsync(undefined);
         });
+    }
+    public setPasswordResetToken(
+        userId: UniqueEntityID,
+        token: string,
+        expiresAt: Date,
+    ): ResultAsync<void, DomainError> {
+        return ResultAsync.fromPromise(
+            UserModel.updateOne(
+                { _id: userId },
+                {
+                    $set: {
+                        passwordResetToken: token,
+                        passwordResetExpires: expiresAt,
+                    },
+                },
+            ).then(() => undefined),
+            (e) => new RepositoryError('Failed to set password reset token', e),
+        );
     }
 }

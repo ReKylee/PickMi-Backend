@@ -5,6 +5,8 @@ export interface UserDocument extends Document {
     email: string;
     password: string;
     role: 'user' | 'admin';
+    passwordResetToken: String;
+    passwordResetExpires: Date;
 }
 
 const UserSchema: Schema<UserDocument> = new Schema(
@@ -26,6 +28,8 @@ const UserSchema: Schema<UserDocument> = new Schema(
             default: 'user',
             required: true,
         },
+        passwordResetToken: { type: String },
+        passwordResetExpires: { type: Date },
     },
     {
         timestamps: true,
