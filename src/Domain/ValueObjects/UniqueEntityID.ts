@@ -25,13 +25,10 @@ export class UniqueEntityID {
     }
 
     public static from(id: string): Result<UniqueEntityID, ValidationError> {
-        const validationResult = uuidSchema.safeParse({ id });
-
-        if (validationResult.success) {
-            return ok(new UniqueEntityID(validationResult.data.id));
-        } else {
-            return err(new ValidationError(validationResult.error));
-        }
+        return uuidSchema
+            .neverthrowParse({ id })
+            .mapErr((e) => new ValidationError(e))
+            .map(({ id }) => new UniqueEntityID(id));
     }
     public toString(): string {
         return this.value;

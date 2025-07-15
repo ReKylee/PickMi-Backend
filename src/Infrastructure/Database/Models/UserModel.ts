@@ -1,10 +1,7 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model, ObjectId } from 'mongoose';
 
-/**
- * Interface representing the User document in MongoDB.
- * This is the data structure that will be stored in the database.
- */
 export interface IUserDocument extends Document {
+    _id: ObjectId;
     email: string;
     password: string;
     role: 'user' | 'admin';

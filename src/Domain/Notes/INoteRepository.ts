@@ -1,4 +1,4 @@
-import { Result } from 'neverthrow';
+import { ResultAsync } from 'neverthrow';
 import { Note } from './Note.js';
 import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
 import {
@@ -11,12 +11,14 @@ export interface INoteRepository {
     /**
      * Saves a note (create or update)
      */
-    save(note: Note): Result<void, RepositoryError>;
+    save(note: Note): ResultAsync<Note, RepositoryError>;
 
     /**
      * Finds a note by its unique ID
      */
-    findById(id: UniqueEntityID): Result<Note, NotFoundError | RepositoryError>;
+    findById(
+        id: UniqueEntityID,
+    ): ResultAsync<Note, NotFoundError | RepositoryError>;
 
     /**
      * Finds notes near a location (in meters)
@@ -25,21 +27,21 @@ export interface INoteRepository {
         lat: number,
         lon: number,
         radius: number,
-    ): Result<Note[], RepositoryError>;
+    ): ResultAsync<Note[], RepositoryError>;
 
     /**
      * Lists all notes by a specific user
      */
-    findByUserId(userId: UniqueEntityID): Result<Note[], RepositoryError>;
+    findByUserId(userId: UniqueEntityID): ResultAsync<Note[], RepositoryError>;
 
     /**
      * Lists all notes in the system (admin only)
      */
-    findAll(): Result<Note[], RepositoryError>;
+    findAll(): ResultAsync<Note[], RepositoryError>;
 }
 
 export interface IAdminNoteRepository extends INoteRepository {
     deleteByAdmin(
         noteId: UniqueEntityID,
-    ): Result<void, NotFoundError | RepositoryError | ForbiddenError>;
+    ): ResultAsync<void, NotFoundError | RepositoryError | ForbiddenError>;
 }

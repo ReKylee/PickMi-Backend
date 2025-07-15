@@ -77,8 +77,14 @@ export class ValidationError extends DomainError {
  * Thrown when a persistence or infrastructure error occurs
  */
 export class RepositoryError extends DomainError {
-    constructor(message = 'Failed to interact with the repository') {
+    public readonly cause?: unknown;
+
+    constructor(
+        message = 'Failed to interact with the repository',
+        cause?: unknown,
+    ) {
         super(message);
+        this.cause = cause;
     }
 
     serialize(): SerializedDomainError {

@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+import { Types } from 'mongoose';
 export interface NoteContent {
     text: string;
     drawingData?: string;
@@ -12,9 +13,10 @@ export interface GeoJSONPoint {
 }
 
 export interface NoteDocument extends Document {
+    _id: Types.ObjectId;
     title: string;
     content: NoteContent;
-    location?: GeoJSONPoint;
+    location: GeoJSONPoint;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -57,7 +59,7 @@ const GeoJSONPointSchema = new Schema<GeoJSONPoint>(
 // Main Note schema
 const NoteSchema = new Schema<NoteDocument>(
     {
-        _id: { type: String, required: true },
+        _id: { type: Schema.Types.ObjectId, required: true },
         title: { type: String, required: true },
         content: { type: NoteContentSchema, required: true },
         location: {
