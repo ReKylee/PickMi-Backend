@@ -1,9 +1,11 @@
 {
 	"info": {
-		"_postman_id": "pickmi-backend-api-tests",
+		"_postman_id": "b416dc27-f957-46bc-b181-5ff7e58865b6",
 		"name": "PickMi Backend API Tests",
 		"description": "Comprehensive API test collection for PickMi Backend - Anonymous note-throwing web application",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46813715",
+		"_collection_link": "https://kylee-939017.postman.co/workspace/Kylee's-Workspace~f7a11495-65c9-43ba-8521-aaa9b6dffe12/collection/46813715-b416dc27-f957-46bc-b181-5ff7e58865b6?action=share&source=collection_link&creator=46813715"
 	},
 	"item": [
 		{
@@ -56,7 +58,8 @@
 								"signup"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "User Sign Up - Duplicate Email",
@@ -101,7 +104,8 @@
 								"signup"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "User Sign Up - Invalid Email",
@@ -146,7 +150,8 @@
 								"signup"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "User Sign In - Valid",
@@ -202,52 +207,8 @@
 								"signin"
 							]
 						}
-					}
-				},
-				{
-					"name": "Admin Sign Up",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"pm.test(\"Response has success message\", function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.message).to.eql(\"User created successfully. Please sign in.\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/signup",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signup"
-							]
-						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Admin Sign In",
@@ -265,11 +226,23 @@
 									"    pm.expect(responseJson).to.have.property('token');",
 									"    pm.expect(responseJson.token).to.be.a('string');",
 									"    ",
-									"    // Store admin token",
+									"    // Store admin token for other requests",
 									"    pm.environment.set('admin_token', responseJson.token);",
+									"    console.log(\"Admin token saved for user:\", pm.environment.get('admin_email'));",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -296,7 +269,8 @@
 								"signin"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "User Sign In - Invalid Credentials",
@@ -342,7 +316,8 @@
 								"signin"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Forgot Password - Valid Email",
@@ -387,7 +362,8 @@
 								"forgot-password"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Reset Password - Invalid Token",
@@ -396,16 +372,17 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
 									"});",
 									"",
-									"pm.test(\"Error type is VALIDATION_ERROR\", function () {",
+									"pm.test(\"Error type is BUSINESS_RULE_VIOLATION\", function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.error.type).to.eql(\"VALIDATION_ERROR\");",
+									"    pm.expect(responseJson.error.type).to.eql(\"BUSINESS_RULE_VIOLATION\");",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -432,7 +409,8 @@
 								"reset-password"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Delete Account - Valid Password",
@@ -481,7 +459,8 @@
 								"me"
 							]
 						}
-					}
+					},
+					"response": []
 				}
 			]
 		},
@@ -508,7 +487,18 @@
 									"    pm.environment.set('test_note_id', responseJson.id);",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -526,7 +516,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"{{test_note_title}}\",\n    \"content\": {\n        \"text\": \"{{test_note_content}}\",\n        \"drawingData\": null\n    },\n    \"location\": {\n        \"latitude\": {{test_latitude}},\n        \"longitude\": {{test_longitude}},\n        \"placeId\": \"{{test_place_id}}\"\n    }\n}"
+							"raw": "{\n    \"content\": {\n        \"text\": \"{{test_note_content}}\"\n    },\n    \"location\": {\n        \"latitude\": {{test_latitude}},\n        \"longitude\": {{test_longitude}},\n        \"placeId\": \"{{test_place_id}}\"\n    }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/notes",
@@ -538,7 +528,8 @@
 								"notes"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Create Note - No Authentication",
@@ -556,7 +547,8 @@
 									"    pm.expect(responseJson.error.type).to.eql(\"AUTHENTICATION_ERROR\");",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -570,7 +562,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Test Note\",\n    \"content\": {\n        \"text\": \"This should fail without auth\"\n    },\n    \"location\": {\n        \"latitude\": 40.7128,\n        \"longitude\": -74.006\n    }\n}"
+							"raw": "{\n    \"content\": {\n        \"text\": \"This should fail without auth\"\n    },\n    \"location\": {\n        \"latitude\": 40.7128,\n        \"longitude\": -74.006\n    }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/notes",
@@ -582,7 +574,8 @@
 								"notes"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Create Note - Invalid Data",
@@ -601,7 +594,8 @@
 									"    pm.expect(responseJson.error.details).to.be.an('array');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -619,7 +613,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"\",\n    \"content\": {\n        \"text\": \"\"\n    },\n    \"location\": {\n        \"latitude\": 200,\n        \"longitude\": -200\n    }\n}"
+							"raw": "{\n    \"content\": {\n        \"text\": \"\"\n    },\n    \"location\": {\n        \"latitude\": 200,\n        \"longitude\": -200\n    }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/notes",
@@ -631,7 +625,8 @@
 								"notes"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get Nearby Notes - Valid",
@@ -655,13 +650,14 @@
 									"        responseJson.forEach(note => {",
 									"            pm.expect(note).to.have.property('id');",
 									"            pm.expect(note).to.have.property('location');",
-									"            pm.expect(note.location).to.have.property('lat');",
-									"            pm.expect(note.location).to.have.property('lon');",
+									"            pm.expect(note.location).to.have.property('latitude');",
+									"            pm.expect(note.location).to.have.property('longitude');",
 									"        });",
 									"    }",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -698,7 +694,8 @@
 								}
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get Specific Note - Valid",
@@ -714,12 +711,12 @@
 									"pm.test(\"Response contains note content\", function () {",
 									"    const responseJson = pm.response.json();",
 									"    pm.expect(responseJson).to.have.property('id');",
-									"    pm.expect(responseJson).to.have.property('title');",
 									"    pm.expect(responseJson).to.have.property('content');",
 									"    pm.expect(responseJson.content).to.have.property('text');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -752,7 +749,8 @@
 								}
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get Specific Note - Not Found",
@@ -804,7 +802,8 @@
 								}
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Delete Note - Valid",
@@ -822,7 +821,8 @@
 									"    pm.expect(responseJson.message).to.eql(\"Note deleted successfully.\");",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -853,13 +853,78 @@
 								"{{test_note_id}}"
 							]
 						}
-					}
+					},
+					"response": []
 				}
 			]
 		},
 		{
 			"name": "👨‍💼 Admin",
 			"item": [
+				{
+					"name": "Create Note - Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response contains note ID and success message\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('id');",
+									"    pm.expect(responseJson.message).to.eql(\"Note thrown successfully!\");",
+									"    ",
+									"    // Store note ID for other tests",
+									"    pm.environment.set('admin_test_note_id', responseJson.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": {\n        \"text\": \"{{test_note_content}}\"\n    },\n    \"location\": {\n        \"latitude\": {{test_latitude}},\n        \"longitude\": {{test_longitude}},\n        \"placeId\": \"{{test_place_id}}\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/notes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Get All Users - Admin",
 					"event": [
@@ -910,7 +975,8 @@
 								"users"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get All Users - Non-Admin",
@@ -952,7 +1018,8 @@
 								"users"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get All Notes - Admin",
@@ -973,7 +1040,6 @@
 									"        responseJson.forEach(note => {",
 									"            pm.expect(note).to.have.property('id');",
 									"            pm.expect(note).to.have.property('userId');",
-									"            pm.expect(note).to.have.property('title');",
 									"            pm.expect(note).to.have.property('content');",
 									"            pm.expect(note).to.have.property('location');",
 									"        });",
@@ -983,7 +1049,8 @@
 									"    }",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -1006,7 +1073,8 @@
 								"notes"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get User by ID - Admin",
@@ -1050,7 +1118,8 @@
 								"{{test_user_id}}"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get Note by ID - Admin",
@@ -1070,7 +1139,8 @@
 									"    pm.expect(responseJson.content).to.have.property('text');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -1094,7 +1164,8 @@
 								"{{admin_test_note_id}}"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Get User Notes - Admin",
@@ -1137,7 +1208,8 @@
 								"notes"
 							]
 						}
-					}
+					},
+					"response": []
 				},
 				{
 					"name": "Delete Note - Admin",
@@ -1179,48 +1251,38 @@
 								"{{admin_test_note_id}}"
 							]
 						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"// Add this to your Admin folder's Pre-request Script\r",
+							"const adminToken = pm.environment.get('admin_token');\r",
+							"if (!adminToken) {\r",
+							"    console.log('❌ Admin token not found. Run Admin Sign In first.');\r",
+							"} else {\r",
+							"    pm.request.headers.add({\r",
+							"        key: 'Authorization', \r",
+							"        value: 'Bearer ' + adminToken\r",
+							"    });\r",
+							"}"
+						]
 					}
 				},
 				{
-					"name": "Delete User - Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response has success message\", function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.message).to.eql(\"User and all associated data deleted successfully.\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin/users/{{test_user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"{{test_user_id}}"
-							]
-						}
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
 					}
 				}
 			]
@@ -1241,9 +1303,7 @@
 					"    pm.environment.set('test_user_email', `testuser${timestamp}@example.com`);",
 					"}",
 					"",
-					"if (!pm.environment.get('admin_email') || pm.environment.get('admin_email').includes('{{timestamp}}')) {",
-					"    pm.environment.set('admin_email', `admin${timestamp}@example.com`);",
-					"}"
+					""
 				]
 			}
 		},

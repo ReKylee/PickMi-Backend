@@ -33,8 +33,13 @@ export class Content {
     get text(): string {
         return this._text;
     }
-
     get drawingData(): string | undefined {
         return this._drawingData;
+    }
+    public toJSON() {
+        return {
+            text: this._text,
+            drawingData: this._drawingData,
+        };
     }
 }
