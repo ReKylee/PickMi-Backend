@@ -1,22 +1,22 @@
 {
-	"id": "837f206e-bf29-4bde-801c-aeaeae962fa2",
+	"id": "cdb7771b-023a-475b-b0af-2e2c2daa8eed",
 	"name": "PickMi Backend API Tests",
-	"timestamp": "2025-07-16T14:21:25.282Z",
+	"timestamp": "2025-07-16T16:10:15.281Z",
 	"collection_id": "46813715-b416dc27-f957-46bc-b181-5ff7e58865b6",
 	"folder_id": 0,
 	"environment_id": "46813715-da6fb4b0-6d26-41eb-9db4-a047a42350b5",
-	"totalPass": 47,
+	"totalPass": 63,
 	"delay": "1000",
 	"persist": true,
 	"status": "finished",
-	"startedAt": "2025-07-16T14:20:56.217Z",
-	"totalFail": 37,
+	"startedAt": "2025-07-16T16:09:43.248Z",
+	"totalFail": 22,
 	"results": [
 		{
 			"id": "038aff73-b001-4a6d-a185-a719de12c84c",
 			"name": "User Sign Up - Valid",
 			"url": "http://localhost:3000/api/auth/signup",
-			"time": 74,
+			"time": 238,
 			"responseCode": {
 				"code": 201,
 				"name": "Created"
@@ -51,7 +51,7 @@
 				}
 			},
 			"times": [
-				74
+				238
 			],
 			"allTests": [
 				{
@@ -67,44 +67,38 @@
 			"id": "43f7eb7b-aabc-458c-a8f6-83b68e2f335e",
 			"name": "User Sign Up - Duplicate Email",
 			"url": "http://localhost:3000/api/auth/signup",
-			"time": 53,
+			"time": 208,
 			"responseCode": {
-				"code": 201,
-				"name": "Created"
+				"code": 409,
+				"name": "Conflict"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Content-Type header is present": true,
-				"Status code is 409": false,
-				"Error type is CONFLICT_ERROR": false
+				"Status code is 409": true,
+				"Error type is CONFLICT_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
 					"pass": 1,
 					"fail": 0
 				},
-				"Content-Type header is present": {
+				"Status code is 409": {
 					"pass": 1,
 					"fail": 0
 				},
-				"Status code is 409": {
-					"pass": 0,
-					"fail": 1
-				},
 				"Error type is CONFLICT_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				53
+				208
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Content-Type header is present": true,
-					"Status code is 409": false,
-					"Error type is CONFLICT_ERROR": false
+					"Status code is 409": true,
+					"Error type is CONFLICT_ERROR": true
 				}
 			]
 		},
@@ -112,7 +106,7 @@
 			"id": "83851049-4a74-45e8-8f55-9f84929d6bab",
 			"name": "User Sign Up - Invalid Email",
 			"url": "http://localhost:3000/api/auth/signup",
-			"time": 54,
+			"time": 53,
 			"responseCode": {
 				"code": 400,
 				"name": "Bad Request"
@@ -120,7 +114,7 @@
 			"tests": {
 				"Response time is less than 5000ms": true,
 				"Status code is 400": true,
-				"Error type is VALIDATION_ERROR": false
+				"Error type is VALIDATION_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -132,18 +126,18 @@
 					"fail": 0
 				},
 				"Error type is VALIDATION_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				54
+				53
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
 					"Status code is 400": true,
-					"Error type is VALIDATION_ERROR": false
+					"Error type is VALIDATION_ERROR": true
 				}
 			]
 		},
@@ -151,7 +145,7 @@
 			"id": "9475718a-3dd3-485a-8eb1-b5fb33f0e6a3",
 			"name": "User Sign In - Valid",
 			"url": "http://localhost:3000/api/auth/signin",
-			"time": 209,
+			"time": 208,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -186,7 +180,7 @@
 				}
 			},
 			"times": [
-				209
+				208
 			],
 			"allTests": [
 				{
@@ -202,7 +196,7 @@
 			"id": "e4a33eb1-7973-44ca-b463-4f28590cbd9a",
 			"name": "Admin Sign Up",
 			"url": "http://localhost:3000/api/auth/signup",
-			"time": 53,
+			"time": 209,
 			"responseCode": {
 				"code": 201,
 				"name": "Created"
@@ -232,7 +226,7 @@
 				}
 			},
 			"times": [
-				53
+				209
 			],
 			"allTests": [
 				{
@@ -247,7 +241,7 @@
 			"id": "16bec3b1-9376-4236-a575-ea4e2377af56",
 			"name": "Admin Sign In",
 			"url": "http://localhost:3000/api/auth/signin",
-			"time": 208,
+			"time": 207,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -277,7 +271,7 @@
 				}
 			},
 			"times": [
-				208
+				207
 			],
 			"allTests": [
 				{
@@ -292,7 +286,7 @@
 			"id": "2612a155-598a-4bf3-8214-15b95e8a5a21",
 			"name": "User Sign In - Invalid Credentials",
 			"url": "http://localhost:3000/api/auth/signin",
-			"time": 207,
+			"time": 206,
 			"responseCode": {
 				"code": 401,
 				"name": "Unauthorized"
@@ -300,7 +294,7 @@
 			"tests": {
 				"Response time is less than 5000ms": true,
 				"Status code is 401": true,
-				"Error type is AUTHENTICATION_ERROR": false
+				"Error type is AUTHENTICATION_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -312,18 +306,18 @@
 					"fail": 0
 				},
 				"Error type is AUTHENTICATION_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				207
+				206
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
 					"Status code is 401": true,
-					"Error type is AUTHENTICATION_ERROR": false
+					"Error type is AUTHENTICATION_ERROR": true
 				}
 			]
 		},
@@ -331,7 +325,7 @@
 			"id": "87139930-c248-4ac0-b85f-58db74b001b7",
 			"name": "Forgot Password - Valid Email",
 			"url": "http://localhost:3000/api/auth/forgot-password",
-			"time": 345,
+			"time": 1935,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -361,7 +355,7 @@
 				}
 			},
 			"times": [
-				345
+				1935
 			],
 			"allTests": [
 				{
@@ -376,10 +370,10 @@
 			"id": "a66fd18e-315a-4cc8-a319-a2c59bdb5ca6",
 			"name": "Reset Password - Invalid Token",
 			"url": "http://localhost:3000/api/auth/reset-password",
-			"time": 208,
+			"time": 206,
 			"responseCode": {
-				"code": 500,
-				"name": "Internal Server Error"
+				"code": 422,
+				"name": "Unprocessable Entity"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -401,7 +395,7 @@
 				}
 			},
 			"times": [
-				208
+				206
 			],
 			"allTests": [
 				{
@@ -415,38 +409,44 @@
 			"id": "e4837454-e960-4624-8cd9-2075ebe197f0",
 			"name": "Delete Account - Valid Password",
 			"url": "http://localhost:3000/api/auth/me",
-			"time": 4,
+			"time": 515,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 200,
+				"name": "OK"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Status code is 200": false,
-				"Response has success message": false
+				"Content-Type header is present": true,
+				"Status code is 200": true,
+				"Response has success message": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
 					"pass": 1,
 					"fail": 0
 				},
+				"Content-Type header is present": {
+					"pass": 1,
+					"fail": 0
+				},
 				"Status code is 200": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Response has success message": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				4
+				515
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Status code is 200": false,
-					"Response has success message": false
+					"Content-Type header is present": true,
+					"Status code is 200": true,
+					"Response has success message": true
 				}
 			]
 		},
@@ -454,10 +454,10 @@
 			"id": "1415057d-6872-46d0-98ed-446337a72244",
 			"name": "Create Note - Valid",
 			"url": "http://localhost:3000/api/notes",
-			"time": 4,
+			"time": 3,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 400,
+				"name": "Bad Request"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -479,7 +479,7 @@
 				}
 			},
 			"times": [
-				4
+				3
 			],
 			"allTests": [
 				{
@@ -493,7 +493,7 @@
 			"id": "9a636ac0-025a-487a-b263-8e3a111fa6d3",
 			"name": "Create Note - No Authentication",
 			"url": "http://localhost:3000/api/notes",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
 				"code": 401,
 				"name": "Unauthorized"
@@ -501,7 +501,7 @@
 			"tests": {
 				"Response time is less than 5000ms": true,
 				"Status code is 401": true,
-				"Error type is AUTHENTICATION_ERROR": false
+				"Error type is AUTHENTICATION_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -513,18 +513,18 @@
 					"fail": 0
 				},
 				"Error type is AUTHENTICATION_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
 					"Status code is 401": true,
-					"Error type is AUTHENTICATION_ERROR": false
+					"Error type is AUTHENTICATION_ERROR": true
 				}
 			]
 		},
@@ -534,13 +534,13 @@
 			"url": "http://localhost:3000/api/notes",
 			"time": 3,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 400,
+				"name": "Bad Request"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Status code is 400": false,
-				"Error type is VALIDATION_ERROR": false
+				"Status code is 400": true,
+				"Error type is VALIDATION_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -548,12 +548,12 @@
 					"fail": 0
 				},
 				"Status code is 400": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Error type is VALIDATION_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
@@ -562,8 +562,8 @@
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Status code is 400": false,
-					"Error type is VALIDATION_ERROR": false
+					"Status code is 400": true,
+					"Error type is VALIDATION_ERROR": true
 				}
 			]
 		},
@@ -571,15 +571,16 @@
 			"id": "e8a83490-98b0-4833-a1d3-2b4bdfef81e9",
 			"name": "Get Nearby Notes - Valid",
 			"url": "http://localhost:3000/api/notes/nearby?lat=40.7128&lon=-74.0060&radius=5000",
-			"time": 5,
+			"time": 157,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 200,
+				"name": "OK"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Status code is 200": false,
-				"Response is an array": false,
+				"Content-Type header is present": true,
+				"Status code is 200": true,
+				"Response is an array": true,
 				"Each note has required properties": true
 			},
 			"testPassFailCounts": {
@@ -587,13 +588,17 @@
 					"pass": 1,
 					"fail": 0
 				},
+				"Content-Type header is present": {
+					"pass": 1,
+					"fail": 0
+				},
 				"Status code is 200": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Response is an array": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Each note has required properties": {
 					"pass": 1,
@@ -601,13 +606,14 @@
 				}
 			},
 			"times": [
-				5
+				157
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Status code is 200": false,
-					"Response is an array": false,
+					"Content-Type header is present": true,
+					"Status code is 200": true,
+					"Response is an array": true,
 					"Each note has required properties": true
 				}
 			]
@@ -618,8 +624,8 @@
 			"url": "http://localhost:3000/api/notes/?lat=40.7128&lon=-74.0060",
 			"time": 3,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 404,
+				"name": "Not Found"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -655,15 +661,15 @@
 			"id": "1246ffc5-c5cd-4132-a4eb-6ba3f60a5b54",
 			"name": "Get Specific Note - Not Found",
 			"url": "http://localhost:3000/api/notes/507f1f77bcf86cd799439011?lat=40.7128&lon=-74.0060",
-			"time": 3,
+			"time": 156,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 422,
+				"name": "Unprocessable Entity"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Status code is 404 or 422": false,
-				"Error response format is correct": false
+				"Status code is 404 or 422": true,
+				"Error response format is correct": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -671,22 +677,22 @@
 					"fail": 0
 				},
 				"Status code is 404 or 422": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Error response format is correct": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				3
+				156
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Status code is 404 or 422": false,
-					"Error response format is correct": false
+					"Status code is 404 or 422": true,
+					"Error response format is correct": true
 				}
 			]
 		},
@@ -694,10 +700,10 @@
 			"id": "3654371b-2212-430b-9b0f-c03a63dfaf71",
 			"name": "Delete Note - Valid",
 			"url": "http://localhost:3000/api/notes/",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 404,
+				"name": "Not Found"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -719,7 +725,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -733,10 +739,10 @@
 			"id": "6589747c-6117-428b-9e27-6aad3ee95cd0",
 			"name": "Get All Users - Admin",
 			"url": "http://localhost:3000/api/admin/users",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -758,7 +764,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -772,15 +778,15 @@
 			"id": "336bcc7a-e338-4dca-bc7a-4c34152cd4da",
 			"name": "Get All Users - Non-Admin",
 			"url": "http://localhost:3000/api/admin/users",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
-				"Status code is 403": false,
-				"Error type is FORBIDDEN_ERROR": false
+				"Status code is 403": true,
+				"Error type is FORBIDDEN_ERROR": true
 			},
 			"testPassFailCounts": {
 				"Response time is less than 5000ms": {
@@ -788,22 +794,22 @@
 					"fail": 0
 				},
 				"Status code is 403": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				},
 				"Error type is FORBIDDEN_ERROR": {
-					"pass": 0,
-					"fail": 1
+					"pass": 1,
+					"fail": 0
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
 					"Response time is less than 5000ms": true,
-					"Status code is 403": false,
-					"Error type is FORBIDDEN_ERROR": false
+					"Status code is 403": true,
+					"Error type is FORBIDDEN_ERROR": true
 				}
 			]
 		},
@@ -811,10 +817,10 @@
 			"id": "d8a8ed94-b75c-41e0-b0d6-9fe6d0a85862",
 			"name": "Get All Notes - Admin",
 			"url": "http://localhost:3000/api/admin/notes",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -836,7 +842,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -850,10 +856,10 @@
 			"id": "7b8165bb-34e2-4bf2-9ab3-214ddcb94a09",
 			"name": "Get User by ID - Admin",
 			"url": "http://localhost:3000/api/admin/users/",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -875,7 +881,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -889,10 +895,10 @@
 			"id": "c70c35c5-ff8b-4ee5-85de-e5edb06ef945",
 			"name": "Get Note by ID - Admin",
 			"url": "http://localhost:3000/api/admin/notes/",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -914,7 +920,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -928,10 +934,10 @@
 			"id": "488ac07b-c687-48d3-ad96-ca5e7e583650",
 			"name": "Get User Notes - Admin",
 			"url": "http://localhost:3000/api/admin/users//notes",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -953,7 +959,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -967,10 +973,10 @@
 			"id": "34e381f8-0a9c-4a8c-a417-ec30f0a9a747",
 			"name": "Delete Note - Admin",
 			"url": "http://localhost:3000/api/admin/notes/",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -992,7 +998,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -1006,10 +1012,10 @@
 			"id": "9179944a-cf6f-49be-98d9-dd6959d877ef",
 			"name": "Delete User - Admin",
 			"url": "http://localhost:3000/api/admin/users/",
-			"time": 3,
+			"time": 2,
 			"responseCode": {
-				"code": 401,
-				"name": "Unauthorized"
+				"code": 403,
+				"name": "Forbidden"
 			},
 			"tests": {
 				"Response time is less than 5000ms": true,
@@ -1031,7 +1037,7 @@
 				}
 			},
 			"times": [
-				3
+				2
 			],
 			"allTests": [
 				{
@@ -1043,7 +1049,7 @@
 		}
 	],
 	"count": 1,
-	"totalTime": 1463,
+	"totalTime": 4327,
 	"collection": {
 		"requests": [
 			{

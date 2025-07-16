@@ -3,7 +3,6 @@ import { MongooseUserRepository } from '../Infrastructure/Database/Repositories/
 import { EmailService } from '../Infrastructure/Services/EmailService.js';
 import { JWTAuthService } from '../Infrastructure/Services/JWTAuthService.js';
 import { LocationService } from '../Infrastructure/Services/LocationService.js';
-
 // Shared instances
 export const userRepository = new MongooseUserRepository();
 export const noteRepository = new MongooseNoteRepository();
@@ -16,12 +15,12 @@ export const locationService = new LocationService(noteRepository);
 
 export const emailService = new EmailService(
     {
-        host: process.env.SMTP_HOST || 'localhost',
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false, // true for 465, false for other ports
         auth: {
-            user: process.env.SMTP_USER || '',
-            pass: process.env.SMTP_PASS || '',
+            user: process.env.SMTP_USER!,
+            pass: process.env.SMTP_PASS!,
         },
     },
     process.env.EMAIL_FROM || 'PickMi <no-reply@pickmi.com>',
