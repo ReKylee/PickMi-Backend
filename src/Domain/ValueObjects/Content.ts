@@ -13,12 +13,12 @@ export interface ContentProps {
 }
 
 export class Content {
-    private readonly _text: string;
-    private readonly _drawingData?: string;
+    readonly text: string;
+    readonly drawingData?: string;
 
     private constructor(props: ContentProps) {
-        this._text = props.text;
-        this._drawingData = props.drawingData;
+        this.text = props.text;
+        this.drawingData = props.drawingData;
     }
 
     public static create(
@@ -28,18 +28,5 @@ export class Content {
             .neverthrowParse(props)
             .mapErr((e) => new ValidationError(e))
             .map((content) => new Content(content));
-    }
-
-    get text(): string {
-        return this._text;
-    }
-    get drawingData(): string | undefined {
-        return this._drawingData;
-    }
-    public toJSON() {
-        return {
-            text: this._text,
-            drawingData: this._drawingData,
-        };
     }
 }
