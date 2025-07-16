@@ -37,9 +37,9 @@ export class EmailService {
     private async verifyConnection(): Promise<void> {
         try {
             await this.transporter.verify();
-            console.log('✅ Gmail SMTP connection verified successfully');
+            console.log('Gmail SMTP connection verified successfully');
         } catch (error) {
-            console.error('❌ Gmail SMTP connection failed:', error);
+            console.error('Gmail SMTP connection failed:', error);
             console.error(
                 'Please check your Gmail credentials and app password',
             );
@@ -55,10 +55,10 @@ export class EmailService {
                 html: options.html,
             });
 
-            console.log(`📧 Email sent successfully to ${options.to}`);
+            console.log(`Email sent successfully to ${options.to}`);
             console.log(`Message ID: ${info.messageId}`);
         } catch (error) {
-            console.error(`❌ Failed to send email to ${options.to}:`, error);
+            console.error(`Failed to send email to ${options.to}:`, error);
             throw error;
         }
     }
