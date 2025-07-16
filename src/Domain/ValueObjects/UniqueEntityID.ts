@@ -1,15 +1,18 @@
-import { randomUUID } from 'crypto';
 import { z } from 'zod';
 import { Result } from 'neverthrow';
 import { ValidationError } from '../../Shared/Errors.js';
+import { Types } from 'mongoose';
 
-const uuidSchema = z.object({
+const objectIdSchema = z.object({
     id: z
         .string({
-            required_error: 'UUID is required',
-            invalid_type_error: 'UUID must be a string',
+            required_error: 'ObjectId is required',
+            invalid_type_error: 'ObjectId must be a string',
         })
-        .uuid({ message: 'Invalid UUID format' }),
+        .regex(/^[0-9a-fA-F]{24}$/, {
+            message:
+                'Invalid ObjectId format (must be 24 character hex string)',
+        }),
 });
 
 export type UniqueEntityIDProps = { id: string };
@@ -20,16 +23,18 @@ export class UniqueEntityID {
     private constructor(id: string) {
         this.value = id;
     }
+
     public static create(): UniqueEntityID {
-        return new UniqueEntityID(randomUUID());
+        return new UniqueEntityID(new Types.ObjectId().toString());
     }
 
     public static from(id: string): Result<UniqueEntityID, ValidationError> {
-        return uuidSchema
+        return objectIdSchema
             .neverthrowParse({ id })
             .mapErr((e) => new ValidationError(e))
             .map(({ id }) => new UniqueEntityID(id));
     }
+
     public toString(): string {
         return this.value;
     }

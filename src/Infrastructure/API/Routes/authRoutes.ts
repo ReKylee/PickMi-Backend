@@ -5,9 +5,9 @@ import { UserController } from '../Controllers/userController.js';
 // Import use cases
 import { SignUp } from '../../../Application/Users/signUp.js';
 import { SignIn } from '../../../Application/Users/signIn.js';
-import { ForgottenPasswordHandler } from '../../../Application/Users/forgottenPassword.js';
+import { ForgottenPassword } from '../../../Application/Users/forgottenPassword.js';
 import { ResetPassword } from '../../../Application/Users/resetPassword.js';
-import { DeleteAccountHandler } from '../../../Application/Users/deleteAccount.js';
+import { DeleteAccount } from '../../../Application/Users/deleteAccount.js';
 
 // Import repositories and services
 import {
@@ -23,16 +23,13 @@ const authRouter = Router();
 // Create use case instances
 const signUpUseCase = new SignUp(userRepository, authService);
 const signInUseCase = new SignIn(userRepository, authService);
-const forgotPasswordUseCase = new ForgottenPasswordHandler(
+const forgotPasswordUseCase = new ForgottenPassword(
     userRepository,
     emailService,
     appBaseUrl,
 );
 const resetPasswordUseCase = new ResetPassword(userRepository);
-const deleteAccountUseCase = new DeleteAccountHandler(
-    userRepository,
-    noteRepository,
-);
+const deleteAccountUseCase = new DeleteAccount(userRepository, noteRepository);
 
 const userController = new UserController(
     signUpUseCase,

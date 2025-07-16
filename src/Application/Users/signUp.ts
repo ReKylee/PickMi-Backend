@@ -1,9 +1,7 @@
-import { ResultAsync, okAsync } from 'neverthrow';
-
+import { ResultAsync } from 'neverthrow';
 import { IAuthService } from '../../Domain/Services/IAuthService.js';
 import { IUserRepository } from '../../Domain/Users/IUserRepository.js';
 import { User } from '../../Domain/Users/User.js';
-
 import {
     ConflictError,
     UnexpectedError,
@@ -33,10 +31,19 @@ export class SignUp {
             role: 'user',
         })
             .mapErr((e) => new ValidationError(e))
-            .andThen((user) => {
-                this.userRepository.save(user);
-                const token = this.authService.signToken(user);
-                return okAsync({ user, token });
-            });
+            .andThen((user) =>
+                this.userRepository
+                    .save(user)
+                    .mapErr((repositoryError) => {
+                        if (repositoryError instanceof ConflictError) {
+                            return repositoryError;
+                        }
+                        return new UnexpectedError(repositoryError);
+                    })
+                    .map((savedUser) => {
+                        const token = this.authService.signToken(savedUser);
+                        return { user: savedUser, token };
+                    }),
+            );
     }
 }

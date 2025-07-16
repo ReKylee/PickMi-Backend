@@ -10,8 +10,10 @@ import { IAdminUserRepository } from '../../../Domain/Users/IUserRepository.js';
 import { User } from '../../../Domain/Users/User.js';
 import { UserMapper } from '../../../Domain/Users/UserMapper.js';
 import { Email } from '../../../Domain/ValueObjects/Email.js';
+import { Password } from '../../../Domain/ValueObjects/Password.js';
 import { UniqueEntityID } from '../../../Domain/ValueObjects/UniqueEntityID.js';
 import {
+    BusinessRuleViolationError,
     ConflictError,
     DomainError,
     ForbiddenError,
@@ -20,7 +22,6 @@ import {
     ValidationError,
 } from '../../../Shared/Errors.js';
 import { UserDocument, UserModel } from '../Models/UserModel.js';
-import { Password } from '../../../Domain/ValueObjects/Password.js';
 
 type UserFindManyQuery = Query<UserDocument[], UserDocument>;
 
@@ -58,7 +59,7 @@ export class MongooseUserRepository implements IAdminUserRepository {
     public updatePasswordByResetToken(
         token: string,
         newPassword: Password,
-    ): ResultAsync<void, RepositoryError> {
+    ): ResultAsync<void, RepositoryError | BusinessRuleViolationError> {
         return fromPromise(
             UserModel.findOneAndUpdate(
                 {
@@ -82,8 +83,9 @@ export class MongooseUserRepository implements IAdminUserRepository {
         ).andThen((doc) => {
             if (!doc) {
                 return errAsync(
-                    new RepositoryError(
-                        'Invalid or expired password reset token',
+                    new BusinessRuleViolationError(
+                        'Password reset token is invalid or has expired',
+                        { token: 'Token not found or expired' },
                     ),
                 );
             }

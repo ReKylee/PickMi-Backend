@@ -70,8 +70,5 @@ const NoteSchema = new Schema<NoteDocument>(
     { timestamps: true },
 );
 
-// Create 2dsphere index for location to enable geo queries
-NoteSchema.index({ location: '2dsphere' });
-
 export const NoteModel: Model<NoteDocument> =
     mongoose.models.Note || mongoose.model<NoteDocument>('Note', NoteSchema);

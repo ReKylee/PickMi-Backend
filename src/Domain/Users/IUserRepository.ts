@@ -2,6 +2,7 @@ import { ResultAsync } from 'neverthrow';
 import { User } from './User.js';
 import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
 import {
+    BusinessRuleViolationError,
     ConflictError,
     DomainError,
     ForbiddenError,
@@ -10,6 +11,7 @@ import {
     ValidationError,
 } from '../../Shared/Errors.js';
 import { Email } from '../ValueObjects/Email.js';
+import { Password } from '../ValueObjects/Password.js';
 
 export interface IUserRepository {
     save(user: User): ResultAsync<User, RepositoryError | ConflictError>;
@@ -34,8 +36,8 @@ export interface IUserRepository {
     ): ResultAsync<void, DomainError>;
     updatePasswordByResetToken(
         token: string,
-        newPassword: import('../ValueObjects/Password.js').Password,
-    ): ResultAsync<void, RepositoryError>;
+        newPassword: Password,
+    ): ResultAsync<void, RepositoryError | BusinessRuleViolationError>;
 }
 
 export interface IAdminUserRepository extends IUserRepository {
