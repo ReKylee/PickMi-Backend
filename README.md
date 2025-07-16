@@ -83,14 +83,14 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Error Responses**:
   - `409 Conflict`: If the email address is already in use. -> BusinessRuleViolationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "BUSINESS_RULE_VIOLATION",
-                        "message": "Email already exists."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "BUSINESS_RULE_VIOLATION",
+                                        "message": "Email already exists."
+                                    }
+                                }
+                                ```
 
   - `400 Bad Request`: If the email is invalid or the password doesn't meet strength requirements. -> ValidationError
 
@@ -118,14 +118,14 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Error Response** (`401 Unauthorized`) -> AuthenticationError
   - For incorrect email or password.
 
-                ```json
-                {
-                    "error": {
-                        "type": "AUTHENTICATION_ERROR",
-                        "message": "Invalid credentials."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "AUTHENTICATION_ERROR",
+                                        "message": "Invalid credentials."
+                                    }
+                                }
+                                ```
 
 ### 3. Forgot Password
 
@@ -142,11 +142,11 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Success Response** (`200 OK`):
   - Confirms the email was sent.
 
-            ```json
-            {
-                "message": "If an account with that email exists, a password reset link has been sent."
-            }
-            ```
+                            ```json
+                            {
+                                "message": "If an account with that email exists, a password reset link has been sent."
+                            }
+                            ```
 
 ### 4. Reset Password
 
@@ -172,14 +172,14 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Error Response** (`400 Bad Request`):
   - If the token is invalid/expired or the new password is too weak. -> ValidationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "VALIDATION_ERROR",
-                        "message": "Invalid token or weak password."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "VALIDATION_ERROR",
+                                        "message": "Invalid token or weak password."
+                                    }
+                                }
+                                ```
 
 ### 5. Delete Account
 
@@ -205,14 +205,14 @@ These endpoints handle user sign-up, sign-in, and password recovery.
 - **Error Response** (`401 Unauthorized`) -> AuthenticationError
   - Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired.
 
-            ```json
-            {
-                "error": {
-                    "type": "AUTHENTICATION_ERROR",
-                    "message": "Invalid password."
-                }
-            }
-            ```
+                            ```json
+                            {
+                                "error": {
+                                    "type": "AUTHENTICATION_ERROR",
+                                    "message": "Invalid password."
+                                }
+                            }
+                            ```
 
 ---
 
@@ -229,7 +229,6 @@ These endpoints are for the core functionality of the app.
 
     ```json
     {
-        "title": "My Secret Note",
         "content": {
             "text": "Never gonna give you up...",
             "drawingData": "/* SVG data, base64 image, or another format */"
@@ -254,41 +253,40 @@ These endpoints are for the core functionality of the app.
 - **Error Responses**:
   - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "AUTHENTICATION_ERROR",
-                        "message": "Invalid password."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "AUTHENTICATION_ERROR",
+                                        "message": "Invalid password."
+                                    }
+                                }
+                                ```
 
   - `403 Forbidden`: If the user's coordinates are too far from the `placeId` location -> ForbiddenError
 
-                ```json
-                {
-                    "error": {
-                        "type": "FORBIDDEN_ERROR",
-                        "message": "You are not at this location."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "FORBIDDEN_ERROR",
+                                        "message": "You are not at this location."
+                                    }
+                                }
+                                ```
 
   - `400 Bad Request`: If content is missing or location data is invalid -> ValidationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "VALIDATION_ERROR",
-                        "message": "Invalid note data.",
-                        "details": [
-                            { "path": "title", "message": "Title is required." },
-                            { "path": "content.text", "message": "Text is required." },
-                            { "path": "location", "message": "Invalid coordinates." }
-                        ]
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "VALIDATION_ERROR",
+                                        "message": "Invalid note data.",
+                                        "details": [
+                                            { "path": "content.text", "message": "Text is required." },
+                                            { "path": "location", "message": "Invalid coordinates." }
+                                        ]
+                                    }
+                                }
+                                ```
 
 ### 2. Get Nearby Notes (for the Map)
 
@@ -303,30 +301,30 @@ These endpoints are for the core functionality of the app.
 - **Success Response** (`200 OK`):
   - Returns a lightweight array of note locations for map display.
 
-            ```json
-            [
-                {
-                    "id": "mongo_object_id_123",
-                    "location": { "lat": 40.7129, "lon": -74.0061 }
-                },
-                {
-                    "id": "mongo_object_id_456",
-                    "location": { "lat": 40.7135, "lon": -74.0055 }
-                }
-            ]
-            ```
+                            ```json
+                            [
+                                {
+                                    "id": "mongo_object_id_123",
+                                    "location": { "lat": 40.7129, "lon": -74.0061 }
+                                },
+                                {
+                                    "id": "mongo_object_id_456",
+                                    "location": { "lat": 40.7135, "lon": -74.0055 }
+                                }
+                            ]
+                            ```
 
 - **Error Responses**:
   - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "AUTHENTICATION_ERROR",
-                        "message": "Invalid password."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "AUTHENTICATION_ERROR",
+                                        "message": "Invalid password."
+                                    }
+                                }
+                                ```
 
 ### 3. Get a Specific Note's Content
 
@@ -354,25 +352,25 @@ These endpoints are for the core functionality of the app.
 - **Error Response**
   - `404 Not Found` -> NotFoundError
 
-            ```json
-            {
-                "error": {
-                    "type": "NOT_FOUND",
-                    "message": "Note not found."
-                }
-            }
-            ```
+                            ```json
+                            {
+                                "error": {
+                                    "type": "NOT_FOUND",
+                                    "message": "Note not found."
+                                }
+                            }
+                            ```
 
   - `401 Unauthorized` Returned if the provided password does not match the one on record for the user, or if the JWT is invalid/expired -> AuthenticationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "AUTHENTICATION_ERROR",
-                        "message": "Invalid password."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "AUTHENTICATION_ERROR",
+                                        "message": "Invalid password."
+                                    }
+                                }
+                                ```
 
 ### 4. Delete a Note
 
@@ -401,25 +399,25 @@ These endpoints are for the core functionality of the app.
 - **Error Responses**:
   - `422 Unprocessable Entity` → BusinessRuleViolationError
 
-            ```json
-            {
-                "error": {
-                    "type": "BUSINESS_RULE_VIOLATION",
-                    "message": "You must be at the note location to delete it."
-                }
-            }
-            ```
+                            ```json
+                            {
+                                "error": {
+                                    "type": "BUSINESS_RULE_VIOLATION",
+                                    "message": "You must be at the note location to delete it."
+                                }
+                            }
+                            ```
 
   - `401 Unauthorized` Returned if the JWT is invalid/expired → AuthenticationError
 
-                ```json
-                {
-                    "error": {
-                        "type": "AUTHENTICATION_ERROR",
-                        "message": "Authentication required."
-                    }
-                }
-                ```
+                                ```json
+                                {
+                                    "error": {
+                                        "type": "AUTHENTICATION_ERROR",
+                                        "message": "Authentication required."
+                                    }
+                                }
+                                ```
 
 ---
 
@@ -470,7 +468,6 @@ These endpoints are for the core functionality of the app.
         {
             "id": "mongo_object_id_123",
             "userId": "user123",
-            "title": "My Secret Note",
             "content": {
                 "text": "Admin can see this.",
                 "drawingData": null
@@ -556,25 +553,25 @@ These endpoints are for the core functionality of the app.
 - **Error Response**:
   - If the note ID does not exist. (`404 Not Found`) → NotFoundError
 
-    ```json
-    {
-        "error": {
-            "type": "NOT_FOUND",
-            "message": "Note not found."
-        }
-    }
-    ```
+                    ```json
+                    {
+                        "error": {
+                            "type": "NOT_FOUND",
+                            "message": "Note not found."
+                        }
+                    }
+                    ```
 
   - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
 
-    ```json
-    {
-        "error": {
-            "type": "FORBIDDEN_ERROR",
-            "message": "Admin access required."
-        }
-    }
-    ```
+                    ```json
+                    {
+                        "error": {
+                            "type": "FORBIDDEN_ERROR",
+                            "message": "Admin access required."
+                        }
+                    }
+                    ```
 
 ### 4. View a User's Notes
 
@@ -588,7 +585,6 @@ These endpoints are for the core functionality of the app.
     [
         {
             "id": "note123",
-            "title": "My Secret Note",
             "content": {
                 "text": "This user's note",
                 "drawingData": null
@@ -679,22 +675,22 @@ These endpoints are for the core functionality of the app.
 - **Error Response**:
   - If the note ID does not exist. (`404 Not Found`) → NotFoundError
 
-    ```json
-    {
-        "error": {
-            "type": "NOT_FOUND",
-            "message": "Note not found."
-        }
-    }
-    ```
+                    ```json
+                    {
+                        "error": {
+                            "type": "NOT_FOUND",
+                            "message": "Note not found."
+                        }
+                    }
+                    ```
 
   - If attempted by a non-admin. (`403 Forbidden`) → ForbiddenError
 
-    ```json
-    {
-        "error": {
-            "type": "FORBIDDEN_ERROR",
-            "message": "Admin access required."
-        }
-    }
-    ```
+                    ```json
+                    {
+                        "error": {
+                            "type": "FORBIDDEN_ERROR",
+                            "message": "Admin access required."
+                        }
+                    }
+                    ```

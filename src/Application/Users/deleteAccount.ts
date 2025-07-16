@@ -14,7 +14,7 @@ export interface DeleteAccountDTO {
     password: string;
 }
 
-export class DeleteAccountHandler {
+export class DeleteAccount {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly noteRepository: IAdminNoteRepository,
@@ -62,4 +62,3 @@ export class DeleteAccountHandler {
             );
     }
 }
-

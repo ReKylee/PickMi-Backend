@@ -5,14 +5,12 @@ import { UniqueEntityID } from '../ValueObjects/UniqueEntityID.js';
 import { Note } from './Note.js';
 import { Types } from 'mongoose';
 import { Content } from '../ValueObjects/Content.js';
-import { Title } from '../ValueObjects/Title.js';
 import { Location } from '../ValueObjects/Location.js';
 
 export class NoteMapper {
     static toDomain(doc: NoteDocument): Result<Note, ValidationError> {
         const idResult = UniqueEntityID.from(doc._id.toString());
         const userIdResult = UniqueEntityID.from(doc.userId.toString());
-        const titleResult = Title.create(doc.title);
         const contentResult = Content.create(doc.content);
         const locationResult = Location.create({
             latitude: doc.location.coordinates[1],
@@ -21,17 +19,15 @@ export class NoteMapper {
         });
 
         return Result.combineWithAllErrors([
-            titleResult,
             contentResult,
             idResult,
             locationResult,
             userIdResult,
         ])
             .mapErr((errs) => new ValidationError(...errs))
-            .map(([title, content, id, location, userId]) =>
+            .map(([content, id, location, userId]) =>
                 Note.reconstitute(
                     {
-                        title,
                         content,
                         userId: userId,
                         location,
@@ -44,7 +40,6 @@ export class NoteMapper {
     static toPersistence(note: Note) {
         return {
             _id: new Types.ObjectId(note.id.toString()),
-            title: note.title.value,
             content: {
                 text: note.content.text,
                 drawingData: note.content.drawingData,

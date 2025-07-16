@@ -10,7 +10,7 @@ import {
 } from '../../Shared/Errors.js';
 import { User } from '../../Domain/Users/User.js';
 
-export class ForgottenPasswordHandler {
+export class ForgottenPassword {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly emailService: EmailService,

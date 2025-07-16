@@ -26,7 +26,7 @@ export class NoteController {
         next: NextFunction,
     ) => {
         const userId = req.user?.id;
-        const { content, location, title } = req.body;
+        const { content, location } = req.body;
 
         if (!userId) {
             return next(new AuthenticationError('User not authenticated'));
@@ -34,7 +34,6 @@ export class NoteController {
 
         const result = await this.createNoteUseCase
             .execute({
-                title,
                 content,
                 location,
                 userId,
@@ -109,7 +108,6 @@ export class NoteController {
             })
             .map((note) => ({
                 id: note.id.toString(),
-                title: note.title,
                 content: {
                     text: note.content.text,
                     drawingData: note.content.drawingData,

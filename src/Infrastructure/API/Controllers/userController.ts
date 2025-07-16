@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ForgottenPasswordHandler } from '../../../Application/Users/forgottenPassword.js';
 import { SignIn } from '../../../Application/Users/signIn.js';
 import { SignUp } from '../../../Application/Users/signUp.js';
-import { ResetPasswordHandler } from '../../../Application/Users/resetPassword.js';
+import { ResetPassword } from '../../../Application/Users/resetPassword.js';
 import { DeleteAccountHandler } from '../../../Application/Users/deleteAccount.js';
 import { ValidationError } from '../../../Shared/Errors.js';
 import { AuthenticatedRequest } from '../../../Shared/Middlewares/authMiddleware.js';
@@ -12,7 +12,7 @@ export class UserController {
         private readonly signUpUseCase: SignUp,
         private readonly signInUseCase: SignIn,
         private readonly forgotPasswordUseCase: ForgottenPasswordHandler,
-        private readonly resetPasswordUseCase: ResetPasswordHandler,
+        private readonly resetPasswordUseCase: ResetPassword,
         private readonly deleteAccountUseCase: DeleteAccountHandler,
     ) {}
 
@@ -81,7 +81,7 @@ export class UserController {
         const { token, newPassword } = req.body;
 
         const result = await this.resetPasswordUseCase
-            .handle({ token, newPassword })
+            .execute({ token, newPassword })
             .map(() => ({
                 message:
                     'Password has been reset successfully. Please sign in.',

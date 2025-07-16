@@ -50,7 +50,6 @@ export class AdminController {
                 const noteDtos = notes.map((note) => ({
                     id: note.id.toString(),
                     userId: note.userId.toString(),
-                    title: note.title.value,
                     content: {
                         text: note.content.text,
                         drawingData: note.content.drawingData,
@@ -122,7 +121,6 @@ export class AdminController {
             (notes) => {
                 const noteDtos = notes.map((note) => ({
                     id: note.id.toString(),
-                    title: note.title.value,
                     content: note.content,
                     location: note.location,
                 }));

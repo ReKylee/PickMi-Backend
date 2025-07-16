@@ -6,7 +6,7 @@ import { UserController } from '../Controllers/userController.js';
 import { SignUp } from '../../../Application/Users/signUp.js';
 import { SignIn } from '../../../Application/Users/signIn.js';
 import { ForgottenPasswordHandler } from '../../../Application/Users/forgottenPassword.js';
-import { ResetPasswordHandler } from '../../../Application/Users/resetPassword.js';
+import { ResetPassword } from '../../../Application/Users/resetPassword.js';
 import { DeleteAccountHandler } from '../../../Application/Users/deleteAccount.js';
 
 // Import repositories and services
@@ -28,7 +28,7 @@ const forgotPasswordUseCase = new ForgottenPasswordHandler(
     emailService,
     appBaseUrl,
 );
-const resetPasswordUseCase = new ResetPasswordHandler(userRepository);
+const resetPasswordUseCase = new ResetPassword(userRepository);
 const deleteAccountUseCase = new DeleteAccountHandler(
     userRepository,
     noteRepository,
