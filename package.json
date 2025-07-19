@@ -4,6 +4,7 @@
     "description": "The anonymous note-throwing web application PickMi.",
     "main": "dist/index.js",
     "scripts": {
+        "seedAdmin": "tsx tests/seedAdmin.ts",
         "build": "tsc",
         "start": "node dist/index.js",
         "dev": "tsx watch src/index.ts"
