@@ -9,10 +9,15 @@ import { GetAllUsers } from '../../../Application/Admin/getAllUsers.js';
 import { GetUserById } from '../../../Application/Admin/getUserById.js';
 import { GetUserNotes } from '../../../Application/Admin/getUserNotes.js';
 import { GetNoteById } from '../../../Application/Admin/getNoteById.js';
-import { userRepository, noteRepository } from '../../../Shared/services.js';
+import {
+    userRepository,
+    noteRepository,
+    authService,
+} from '../../../Shared/services.js';
+import { CreateAdmin } from '../../../Application/Admin/createAdmin.js';
 
 const adminRouter = Router();
-
+const createAdminUseCase = new CreateAdmin(userRepository, authService);
 const getAllUsersUseCase = new GetAllUsers(userRepository);
 const getAllNotesUseCase = new GetAllNotes(noteRepository);
 const getUserByIdUseCase = new GetUserById(userRepository);
@@ -21,6 +26,7 @@ const deleteUserUseCase = new DeleteUser(userRepository, noteRepository);
 const deleteNoteUseCase = new DeleteNote(noteRepository);
 const getNoteByidUseCase = new GetNoteById(noteRepository);
 const adminController = new AdminController(
+    createAdminUseCase,
     getAllUsersUseCase,
     getAllNotesUseCase,
     getUserByIdUseCase,
@@ -29,7 +35,8 @@ const adminController = new AdminController(
     deleteNoteUseCase,
     getNoteByidUseCase,
 );
-
+// Does not require authentication or admin role but requires a secret header
+adminRouter.post('/seed-admin', adminController.createAdmin);
 adminRouter.use(authMiddleware, requireAdmin);
 
 adminRouter.get('/users', adminController.getAllUsers);

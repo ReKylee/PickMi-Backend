@@ -6,9 +6,12 @@ import { GetUserNotes } from '../../../Application/Admin/getUserNotes.js';
 import { DeleteUser } from '../../../Application/Admin/deleteUser.js';
 import { DeleteNote } from '../../../Application/Admin/deleteNote.js';
 import { GetNoteById } from '../../../Application/Admin/getNoteById.js';
+import { CreateAdmin } from '../../../Application/Admin/createAdmin.js';
+import { AuthenticationError } from '../../../Shared/Errors.js';
 
 export class AdminController {
     constructor(
+        private readonly createAdminUseCase: CreateAdmin,
         private readonly getAllUsersUseCase: GetAllUsers,
         private readonly getAllNotesUseCase: GetAllNotes,
         private readonly getUserByIdUseCase: GetUserById,
@@ -17,7 +20,28 @@ export class AdminController {
         private readonly deleteNoteUseCase: DeleteNote,
         private readonly getNoteByIdUseCase: GetNoteById,
     ) {}
+    public createAdmin = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        const secret = req.headers['x-seed-secret'];
+        if (secret !== process.env.SEED_SECRET) {
+            res.status(401).json(new AuthenticationError('Unauthorized'));
+        }
 
+        const { email, password } = req.body;
+        const result = await this.createAdminUseCase
+            .execute({ email, password })
+            .map(() => ({
+                message: 'Admin created successfully. Please sign in.',
+            }));
+
+        result.match(
+            (response) => res.status(201).json(response),
+            (error) => next(error),
+        );
+    };
     public getAllUsers = async (
         _: Request,
         res: Response,
