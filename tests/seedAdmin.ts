@@ -4,9 +4,8 @@ import { MongooseUserRepository } from '../src/Infrastructure/Database/Repositor
 import { User } from '../src/Domain/Users/User';
 import mongoose from 'mongoose';
 
-// Replace these with your desired admin credentials
-const adminEmail = 'admin@example.com';
-const adminPassword = 'StrongAdminPassword!';
+const adminEmail = 'admin@test.com';
+const adminPassword = 'TestPassword123!';
 
 async function seedAdmin() {
     const mongoUri = process.env.MONGO_URI!;
