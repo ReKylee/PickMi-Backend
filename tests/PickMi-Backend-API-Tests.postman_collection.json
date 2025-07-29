@@ -1296,7 +1296,7 @@
 			]
 		},
 		{
-			"name": "SeedAdmin",
+			"name": "SeedAdmins",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1306,7 +1306,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://pickmi-backend.up.railway.app/seed-admin",
+					"raw": "https://pickmi-backend.up.railway.app/seed-admins",
 					"protocol": "https",
 					"host": [
 						"pickmi-backend",
@@ -1315,7 +1315,7 @@
 						"app"
 					],
 					"path": [
-						"seed-admin"
+						"seed-admins"
 					]
 				},
 				"description": "Generated from cURL: curl -X POST https://your-backend.up.railway.app/seed-admin \\\n  -H \"x-seed-secret: your-super-secret-key\"\n"
