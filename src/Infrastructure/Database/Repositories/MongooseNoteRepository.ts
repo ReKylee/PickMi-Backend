@@ -69,6 +69,7 @@ export class MongooseNoteRepository implements IAdminNoteRepository {
         lat: number,
         lon: number,
         radius: number,
+        includeDrawingData = false,
     ): ResultAsync<Note[], RepositoryError> {
         const query = NoteModel.find({
             location: {
@@ -77,7 +78,11 @@ export class MongooseNoteRepository implements IAdminNoteRepository {
                     $maxDistance: radius,
                 },
             },
-        }).select('-content.drawingData');
+        });
+
+        if (!includeDrawingData) {
+            query.select('-content.drawingData');
+        }
 
         return this._executeFindQuery(query, 'Failed to find nearby notes');
     }

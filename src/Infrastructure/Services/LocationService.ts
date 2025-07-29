@@ -13,9 +13,15 @@ export class LocationService implements ILocationService {
         userLatitude: number,
         userLongitude: number,
         radiusMeters: number,
+        includeDrawingData = false,
     ): ResultAsync<Note | null, RepositoryError> {
         return this.noteRepository
-            .findNearby(userLatitude, userLongitude, radiusMeters)
+            .findNearby(
+                userLatitude,
+                userLongitude,
+                radiusMeters,
+                includeDrawingData,
+            )
             .map((nearbyNotes) => {
                 const foundNote = nearbyNotes.find((note) =>
                     note.id.equals(noteId),

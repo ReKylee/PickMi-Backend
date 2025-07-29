@@ -9,5 +9,6 @@ export interface ILocationService {
         userLatitude: number,
         userLongitude: number,
         radiusMeters: number,
+        includeDrawingData?: boolean,
     ): ResultAsync<Note | null, RepositoryError>;
 }

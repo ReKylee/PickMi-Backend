@@ -20,6 +20,7 @@ export interface INoteRepository {
         lat: number,
         lon: number,
         radius: number,
+        includeDrawingData?: boolean,
     ): ResultAsync<Note[], RepositoryError>;
 
     deleteById(id: UniqueEntityID): ResultAsync<void, RepositoryError>;

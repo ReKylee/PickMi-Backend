@@ -94,6 +94,7 @@ export class NoteController {
                     lat,
                     lon,
                     1000,
+                    true,
                 ),
             )
             .andThen((note) => {
