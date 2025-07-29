@@ -26,4 +26,4 @@ export const emailService = new EmailService(
     process.env.EMAIL_FROM || 'PickMi <no-reply@pickmi.com>',
 );
 
-export const appBaseUrl = process.env.APP_BASE_URL || 'http://localhost:3000';
+export const appBaseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
